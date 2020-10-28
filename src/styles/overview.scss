@@ -1,5 +1,11 @@
-.App {
-	&-ok {
-		font-size: 1rem;
+.employees {
+	list-style: none;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+
+	&_employee {
+		background-color: grey;
+		margin: 1rem;
+		border: 1px solid black;
 	}
 }
