@@ -10,7 +10,9 @@ export default class Overview extends React.Component {
             error: null,
             isLoaded: false,
             employees: [],
-            filters: [{ key: '', value: '' }]
+            filters: [{ key: '', value: '' }],
+            sorters: ["name", "email", "department", "location"],
+            currentSorter: "p.firstName"
         }
 
         this.handleChangeKey = this.handleChangeKey.bind(this);
@@ -18,6 +20,7 @@ export default class Overview extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleNewFilter = this.handleNewFilter.bind(this);
         this.removeFilter = this.removeFilter.bind(this);
+        this.handleChangeSorter = this.handleChangeSorter.bind(this);
     }
 
     componentDidMount() {
@@ -54,6 +57,10 @@ export default class Overview extends React.Component {
         this.setState({ filters: currentFilters });
     }
 
+    handleChangeSorter = (event) => {
+        this.setState({ currentSorter: event.target.value });
+    }
+
     handleNewFilter = (event) => {
         const { filters } = this.state;
         if ( filters.length < 3 ) {
@@ -77,6 +84,8 @@ export default class Overview extends React.Component {
         this.state.filters.forEach(filter => {
             filters += `${filter.key}=${filter.value}&`;
         })
+
+        filters += `orderby=${this.state.currentSorter}`;
         
         serverAPI("GET", `http://localhost/companydirectory/libs/php/getAll.php?${filters}`)
             .then(employees => this.setState({ isLoaded: true, employees: employees.data }))
@@ -84,7 +93,7 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employees, filters } = this.state;
+        const { error, isLoaded, employees, filters, sorters, currentSorter } = this.state;
 
         let filterInputs = filters.map((filter, index) => (
             <div key={`filter-${index}`}>
@@ -102,6 +111,18 @@ export default class Overview extends React.Component {
                 </button>
             </div>
         ))
+
+        let sortingInput = (
+            <div>
+                <label htmlFor="sorting">Sort By</label>
+                <select name="sorting" value={currentSorter} onChange={this.handleChangeSorter}>
+                    <option value="p.firstName">{sorters[0]}</option>
+                    <option value="p.email">{sorters[1]}</option>
+                    <option value="d.name">{sorters[2]}</option>
+                    <option value="l.name">{sorters[3]}</option>
+                </select>
+            </div>
+        );
 
         if ( error ) {
             return <div>Error: {error.message}</div>
@@ -123,6 +144,10 @@ export default class Overview extends React.Component {
                                         More
                                     </button>
                                 </span>
+                            </div>
+
+                            <div>
+                                {sortingInput}
                             </div>
 
                             <div>
