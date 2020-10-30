@@ -96,8 +96,8 @@ export default class Overview extends React.Component {
         const { error, isLoaded, employees, filters, sorters, currentSorter } = this.state;
 
         let filterInputs = filters.map((filter, index) => (
-            <div key={`filter-${index}`}>
-                <span>{index + 1}</span>
+            <div key={`filter-${index}`} className="employees-form__filterline">
+                <span className="employees-form__filterline--index">{index + 1}</span>
                 <select name={`filter.key-${index}`} value={filter.key} onChange={this.handleChangeKey}>
                     <option value="jobTitle">Job Title</option>
                     <option value="department">Department</option>
@@ -106,15 +106,16 @@ export default class Overview extends React.Component {
 
                 <input type="text" name={`filter.value-${index}`} value={filter.value} placeholder="Add a filter..." onChange={this.handleChangeValue}/>
 
-                <button type="button" name={`filter.x-${index}`} onClick={this.removeFilter}>
-                    X
-                </button>
+                <div className="employees-form__filtergroup-x_wrap">
+                    <button className="employees-form__filtergroup-x" type="button" name={`filter.x-${index}`} onClick={this.removeFilter}>
+                        X
+                    </button>
+                </div>
             </div>
         ))
 
         let sortingInput = (
             <div>
-                <label htmlFor="sorting">Sort By</label>
                 <select name="sorting" value={currentSorter} onChange={this.handleChangeSorter}>
                     <option value="p.firstName">{sorters[0]}</option>
                     <option value="p.email">{sorters[1]}</option>
@@ -133,25 +134,31 @@ export default class Overview extends React.Component {
             
 
             return (
-                <div>
-                    <div>
+                <div className="employees-container">
+                    <div className="employees-form">
                         <form onSubmit={this.handleSubmit}>
-                            <div>
+                            <label>Filters</label>
+
+                            <div className="employees-form__filtergroup">
                                 { filterInputs }
 
-                                <span>
+                                <span className="employees-form__filtergroup-more">
                                     <button type="button" onClick={this.handleNewFilter}>
                                         More
                                     </button>
                                 </span>
                             </div>
 
-                            <div>
+                            <hr/>
+
+                            <label>Sort By</label>
+
+                            <div className="employees-form__sortinggroup">
                                 {sortingInput}
                             </div>
 
-                            <div>
-                                <button type="submit">Submit</button>
+                            <div className="employees-form__submit_wrap">
+                                <button type="submit" className="employees-form__submit">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -159,11 +166,18 @@ export default class Overview extends React.Component {
                     
                     <ul className="employees">
                         {employees.map((employee, index) => (
-                            <li key={employee.lastName} className="employees_employee">
-                                {employee.id} {employee.firstName} {employee.lastName} {employee.email} {employee.department} {employee.location} {employee.jobTitle}
-                                <Link to={`/employee/${employee.id}`}>
-                                    <button>{index}</button>
-                                </Link>
+                            <li key={`${employee.lastName}-${index}`}>
+                                <div className="employee">
+                                    <div className="employee__head">{employee.firstName} {employee.lastName}</div>
+                                    <div className="employee__bottom">
+                                        <div className="employee__bottom--avatar">{employee.firstName[0]}{employee.lastName[0]}</div>
+                                        <div className="employee__bottom--info">
+                                            <div className="employee__bottom--info-experience">{employee.experience} years of experience</div>
+                                            <div className="employee__bottom--info-department">{employee.department}</div>
+                                            <Link to={`/employee/${employee.id}`} className="employee__bottom--info-link"><div>More</div></Link>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         ))}
                     </ul>

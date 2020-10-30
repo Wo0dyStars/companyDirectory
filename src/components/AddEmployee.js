@@ -66,7 +66,7 @@ export default class AddEmployee extends React.Component {
         )
 
         return (
-            <div>
+            <div className="newEmployee">
                 {newEmployeeForm}
 
                 {error && (<div>{ error }</div>)}

@@ -6,10 +6,10 @@ export default class Navigation extends React.Component {
         return (
             <nav className="navigation">
                 <ul className="navigation-list">
-                    <NavLink exact to="/" activeClassName="navigation-list--element__active">
+                    <NavLink exact to="/" className="navigation-list--element__link" activeClassName="navigation-list--element__active">
                         <li className="navigation-list--element">Overview</li>
                     </NavLink>
-                    <NavLink to="/employee/new" activeClassName="navigation-list--element__active">
+                    <NavLink to="/employee/new" className="navigation-list--element__link" activeClassName="navigation-list--element__active">
                         <li className="navigation-list--element">+</li>
                     </NavLink>
                 </ul>

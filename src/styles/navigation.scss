@@ -1,7 +1,6 @@
 .navigation {
-	width: 15rem;
 	min-height: 100vh;
-	background-color: rgba(0, 0, 0, .1);
+	background-color: #203a43;
 
 	&-list {
 		list-style: none;
@@ -10,7 +9,7 @@
 		padding: 0;
 
 		&--element {
-			background-color: rgba(0, 0, 0, .6);
+			background-color: #203a43;
 			color: white;
 			padding: 3rem;
 			display: flex;
@@ -18,10 +17,16 @@
 			justify-content: center;
 			text-transform: uppercase;
 			font-size: 1.5rem;
+			transition: all .2s ease;
+
+			&__link {
+				text-decoration: none;
+			}
 
 			&__active li {
 				background-color: white;
-				color: black;
+				color: #203a43;
+				font-weight: 700;
 			}
 		}
 	}
