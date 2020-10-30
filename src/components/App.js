@@ -2,10 +2,12 @@ import Overview from "./Overview";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Employee from "./Employee";
 import AddEmployee from "./AddEmployee";
+import Navigation from "./Navigation";
 
 const App = () =>  (
     <Router>
-      <div className="App-ok">
+      <div className="container">
+        <Navigation />
         <Switch>
           <Route exact path="/" render={(props) => <Overview {...props} />} />
           <Route exact path="/employee/new" render={(props) => <AddEmployee {...props} />} />

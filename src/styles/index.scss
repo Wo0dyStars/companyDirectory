@@ -1,4 +1,5 @@
 @import "app.scss";
+@import "navigation.scss";
 @import "overview.scss";
 @import "filter.scss";
 @import "employee.scss";
@@ -7,6 +8,7 @@
 
 body {
 	margin: 0;
+	overflow-y: scroll;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
 		'Droid Sans', 'Helvetica Neue', sans-serif;
 	-webkit-font-smoothing: antialiased;
