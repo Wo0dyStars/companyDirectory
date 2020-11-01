@@ -27,7 +27,7 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
-        serverAPI("GET", "http://localhost/companydirectory/libs/php/getAll.php")
+        serverAPI("GET", "/companydirectory/libs/php/getAll.php")
             .then(employees => {
                 this.setState({ isLoaded: true, employees: employees.data })
             })
