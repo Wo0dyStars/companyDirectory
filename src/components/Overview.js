@@ -27,15 +27,16 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
-        serverAPI("GET", "/getAll.php")
-            .then(employees => {
-                console.log(employees)
-                this.setState({ isLoaded: true, employees: employees.data })
-            })
-            .catch((error) => {
-                console.log(error);
-                this.setState({ isLoaded: true, error })
-            });
+        console.log("doing anything....");
+        // serverAPI("GET", "/getAll.php")
+        //     .then(employees => {
+        //         console.log(employees)
+        //         this.setState({ isLoaded: true, employees: employees.data })
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //         this.setState({ isLoaded: true, error })
+        //     });
     }
 
     handleChange = (event) => {
