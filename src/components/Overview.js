@@ -29,9 +29,13 @@ export default class Overview extends React.Component {
     componentDidMount() {
         serverAPI("GET", "/companydirectory/libs/php/getAll.php")
             .then(employees => {
+                console.log(employees)
                 this.setState({ isLoaded: true, employees: employees.data })
             })
-            .catch((error) => this.setState({ isLoaded: true, error }));
+            .catch((error) => {
+                console.log(error);
+                this.setState({ isLoaded: true, error })
+            );
     }
 
     handleChange = (event) => {
