@@ -34,7 +34,7 @@ export default class AddEmployee extends React.Component {
     handleSubmit = (event) => {
         event.preventDefault();
 
-        serverAPI("POST", "http://localhost/companydirectory/libs/php/insertEmployee.php", JSON.stringify(this.state))
+        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/insertEmployee.php", JSON.stringify(this.state))
             .then(() => this.setState(
                 { 
                     firstName: "", lastName: "", email: "", jobTitle: "", departmentID: 1, expertise: "", phone: "", biography: "", avatar: "",

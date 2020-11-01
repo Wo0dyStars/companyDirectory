@@ -24,7 +24,7 @@ class Employee extends React.Component {
 
     componentDidMount() {
         const userIndex = this.props.match.params.index;
-        fetch(`http://localhost/companydirectory/libs/php/getAll.php?id=${userIndex}`)
+        fetch(`https://aqueous-atoll-68745.herokuapp.com/getAll.php?id=${userIndex}`)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -67,7 +67,7 @@ class Employee extends React.Component {
     }
 
     handleSave = (event) => {
-        serverAPI("POST", "http://localhost/companydirectory/libs/php/updateEmployee.php", JSON.stringify(this.state.editEmployee))
+        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/updateEmployee.php", JSON.stringify(this.state.editEmployee))
         .then((res) => this.setState({successOnSave: "You have just saved your updated values."}))
         .catch((e) => console.log(e));
 

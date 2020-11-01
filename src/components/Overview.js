@@ -27,16 +27,15 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
-        console.log("doing anything....");
-        // serverAPI("GET", "/getAll.php")
-        //     .then(employees => {
-        //         console.log(employees)
-        //         this.setState({ isLoaded: true, employees: employees.data })
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //         this.setState({ isLoaded: true, error })
-        //     });
+        serverAPI("GET", "https://aqueous-atoll-68745.herokuapp.com/getAll.php")
+            .then(employees => {
+                console.log(employees)
+                this.setState({ isLoaded: true, employees: employees.data })
+            })
+            .catch((error) => {
+                console.log(error);
+                this.setState({ isLoaded: true, error })
+            });
     }
 
     handleChange = (event) => {
@@ -70,7 +69,7 @@ export default class Overview extends React.Component {
     handleDelete = (event) => {
         console.log(event.target.value);
 
-        serverAPI("POST", "http://localhost/companydirectory/libs/php/deleteEmployee.php", JSON.stringify({id: event.target.value}))
+        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/deleteEmployee.php", JSON.stringify({id: event.target.value}))
         .then((res) => {
             console.log(res);
             const person = this.state.employees.filter(employee => employee.id === event.target.value)[0];
@@ -94,7 +93,7 @@ export default class Overview extends React.Component {
 
         console.log(filters);
         
-        serverAPI("GET", `http://localhost/companydirectory/libs/php/getAll.php?${filters}`)
+        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/getAll.php?${filters}`)
             .then(employees => this.setState({ isLoaded: true, employees: employees.data }))
             .catch((error) => this.setState({ isLoaded: true, error }));
     }
