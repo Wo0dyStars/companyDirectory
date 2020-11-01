@@ -1,3 +1,4 @@
+@import "media_queries.scss";
 @import "app.scss";
 @import "navigation.scss";
 @import "overview.scss";
@@ -5,6 +6,8 @@
 @import "employee.scss";
 @import "edit_employee.scss";
 @import "add_employee.scss";
+@import "loading_spinner.scss";
+@import "messages.scss";
 
 body {
 	margin: 0;

@@ -7,7 +7,6 @@ import Navigation from "./Navigation";
 const App = () =>  (
     <Router>
       <div className="container">
-        <Navigation />
         <Switch>
           <Route exact path="/" render={(props) => <Overview {...props} />} />
           <Route exact path="/employee/new" render={(props) => <AddEmployee {...props} />} />
