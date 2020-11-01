@@ -27,7 +27,7 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
-        serverAPI("GET", "https://aqueous-atoll-68745.herokuapp.com/getAll.php")
+        serverAPI("GET", "https://aqueous-atoll-68745.herokuapp.com/get.php")
             .then(employees => {
                 console.log(employees)
                 this.setState({ isLoaded: true, employees: employees.data })
@@ -69,7 +69,7 @@ export default class Overview extends React.Component {
     handleDelete = (event) => {
         console.log(event.target.value);
 
-        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/deleteEmployee.php", JSON.stringify({id: event.target.value}))
+        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/delete.php", JSON.stringify({id: event.target.value}))
         .then((res) => {
             console.log(res);
             const person = this.state.employees.filter(employee => employee.id === event.target.value)[0];
@@ -93,7 +93,7 @@ export default class Overview extends React.Component {
 
         console.log(filters);
         
-        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/getAll.php?${filters}`)
+        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/get.php?${filters}`)
             .then(employees => this.setState({ isLoaded: true, employees: employees.data }))
             .catch((error) => this.setState({ isLoaded: true, error }));
     }
