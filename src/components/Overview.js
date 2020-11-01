@@ -27,6 +27,17 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
+        console.log("now its calling...");
+        serverAPI("GET", "https://boiling-shore-15346.herokuapp.com//php/getAll.php")
+            .then(employees => {
+                console.log("here");
+                console.log(employees);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        console.log("another one is calling...");
         serverAPI("GET", "/php/getAll.php")
             .then(employees => {
                 console.log(employees)
