@@ -30,7 +30,6 @@ export default class Overview extends React.Component {
         console.log("now its calling...");
         serverAPI("GET", "https://boiling-shore-15346.herokuapp.com//getAll.php")
             .then(employees => {
-                console.log("here");
                 console.log(employees);
             })
             .catch((error) => {
