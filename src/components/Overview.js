@@ -28,7 +28,7 @@ export default class Overview extends React.Component {
 
     componentDidMount() {
         console.log("now its calling...");
-        serverAPI("GET", "https://boiling-shore-15346.herokuapp.com//php/getAll.php")
+        serverAPI("GET", "https://boiling-shore-15346.herokuapp.com//getAll.php")
             .then(employees => {
                 console.log("here");
                 console.log(employees);
@@ -38,7 +38,7 @@ export default class Overview extends React.Component {
             });
 
         console.log("another one is calling...");
-        serverAPI("GET", "/php/getAll.php")
+        serverAPI("GET", "/getAll.php")
             .then(employees => {
                 console.log(employees)
                 this.setState({ isLoaded: true, employees: employees.data })
