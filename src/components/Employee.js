@@ -24,24 +24,13 @@ class Employee extends React.Component {
 
     componentDidMount() {
         const userIndex = this.props.match.params.index;
-        fetch(`https://aqueous-atoll-68745.herokuapp.com/get.php?id=${userIndex}`)
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    console.log(result);
-                    this.setState({
-                        isLoaded: true,
-                        employee: result.data[0],
-                        editEmployee: result.data[0]
-                    })
-                },
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    })
-                }
-            )
+        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/get.php?id=${userIndex}`)
+            .then((foundEmployee) => this.setState({
+                isLoaded: true,
+                employee: foundEmployee.data[0],
+                editEmployee: foundEmployee.data[0]
+            }))
+            .catch((error) => this.setState({ isLoaded: true, error }));
     }
 
     handleChange = (event) => {
@@ -67,9 +56,10 @@ class Employee extends React.Component {
     }
 
     handleSave = (event) => {
+        this.setState({ isLoaded: false });
         serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/update.php", JSON.stringify(this.state.editEmployee))
-        .then((res) => this.setState({successOnSave: "You have just saved your updated values."}))
-        .catch((e) => console.log(e));
+            .then(() => this.setState({ successOnSave: "You have just saved your updated values.", isLoaded: true }))
+            .catch((error) => this.setState({ isLoaded: true, error }));
 
         this.toggleEdit();
     }
@@ -85,7 +75,6 @@ class Employee extends React.Component {
     render() {
         const { error, isLoaded, employee, editEmployee, isEditing, successOnSave } = this.state;
         
-
         let successMessage = <div></div>;
         if ( successOnSave ) {
             successMessage = (
@@ -183,7 +172,6 @@ class Employee extends React.Component {
 
                     <article className="employee-section-container">
                         
-
                         <section className="employee-section">
                             <header>
 
@@ -265,8 +253,6 @@ class Employee extends React.Component {
                                         { fields.phone }
                                     </div>
 
-                                    
-
                                     <div>
                                         <label htmlFor="location">Location</label>
                                         { fields.location }
@@ -275,9 +261,6 @@ class Employee extends React.Component {
                             </header>
                         </section>
                     </article>
-                    
-
-                    
                     
                 </div>
             )

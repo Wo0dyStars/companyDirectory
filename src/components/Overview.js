@@ -29,11 +29,9 @@ export default class Overview extends React.Component {
     componentDidMount() {
         serverAPI("GET", "https://aqueous-atoll-68745.herokuapp.com/get.php")
             .then(employees => {
-                console.log(employees)
                 this.setState({ isLoaded: true, employees: employees.data })
             })
             .catch((error) => {
-                console.log(error);
                 this.setState({ isLoaded: true, error })
             });
     }
@@ -67,17 +65,17 @@ export default class Overview extends React.Component {
     }
 
     handleDelete = (event) => {
-        console.log(event.target.value);
 
+        this.setState({ isLoaded: false });
         serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/delete.php", JSON.stringify({id: event.target.value}))
-        .then((res) => {
-            console.log(res);
+        .then(() => {
             const person = this.state.employees.filter(employee => employee.id === event.target.value)[0];
             const personName = person.firstName + " " + person.lastName;
             this.setState({ employees: this.state.employees.filter(employee => employee.id !== event.target.value),
+                            isLoaded: true,
                             successOnDeletion: `You have now successfully deleted ${personName} from your directory.` });
         })
-        .catch((e) => console.log(e));
+        .catch((error) => this.setState({ isLoaded: true, error }));
     }
 
     handleSubmit = (e) => {
@@ -90,9 +88,8 @@ export default class Overview extends React.Component {
 
         filters += `orderby=${this.state.currentSorter}&`;
         filters += `orderdir=${this.state.currentSorting}`;
-
-        console.log(filters);
         
+        this.setState({ isLoaded: false });
         serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/get.php?${filters}`)
             .then(employees => this.setState({ isLoaded: true, employees: employees.data }))
             .catch((error) => this.setState({ isLoaded: true, error }));
@@ -103,8 +100,8 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employees, filters, sorters, currentSorter, currentSorting, successOnDeletion } = this.state;
-        console.log(employees);
+        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion } = this.state;
+        
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
         ))
@@ -164,101 +161,95 @@ export default class Overview extends React.Component {
                 </div>)
         } else {
 
-            
+        return (
+            <div className="employees-container">
+                <div className="employees-form">
+                    <form onSubmit={this.handleSubmit}>
+                        <h1 className="main-header">Welcome to the your favourite</h1>
+                        <div>business <span>directory</span></div>
+                        <div className="employees-form--background">
+                            
+                            {filterInput}
 
-            return (
-                <div className="employees-container">
-                    <div className="employees-form">
-                        <form onSubmit={this.handleSubmit}>
-                            <h1 className="main-header">Welcome to the your favourite</h1>
-                            <div>business <span>directory</span></div>
-                            <div className="employees-form--background">
-                                
-
-                                {filterInput}
-
-                                <div className="employees-form__sortinggroup">
-                                    <div>
-                                        {sorterInputs}
-                                    </div>
-                                    
-                                    
-                                    <div className="sorter--sortby">
-                                        <input key="sortby1" type="radio" id="sortby1" name="sortby" checked={ "ASC" === currentSorting } value="ASC" onChange={this.handleChangeSorting}/>
-                                        <label htmlFor="sortby1">ASC</label>
-
-                                        <input key="sortby2" type="radio" id="sortby2" name="sortby" checked={ "DESC" === currentSorting } value="DESC" onChange={this.handleChangeSorting}/>
-                                        <label htmlFor="sortby2">DESC</label>
-                                    </div>
+                            <div className="employees-form__sortinggroup">
+                                <div>
+                                    {sorterInputs}
                                 </div>
-
                                 
+                                <div className="sorter--sortby">
+                                    <input key="sortby1" type="radio" id="sortby1" name="sortby" checked={ "ASC" === currentSorting } value="ASC" onChange={this.handleChangeSorting}/>
+                                    <label htmlFor="sortby1">ASC</label>
+
+                                    <input key="sortby2" type="radio" id="sortby2" name="sortby" checked={ "DESC" === currentSorting } value="DESC" onChange={this.handleChangeSorting}/>
+                                    <label htmlFor="sortby2">DESC</label>
+                                </div>
                             </div>
-                            {/* <div className="design-element"></div> */}
 
-                            <div className="square1"></div>
-                            <div className="square2"></div>
-                            <div className="square3"></div>
-
-                            <div className="square4"></div>
-                            <div className="square5"></div>
-                            <div className="square6"></div>
-                        </form>
-                    </div>
-
-                    <div className="members">
-                        <h1 className="members-background">Members Directory</h1>
-                        <h1 className="members-header">Members Directory</h1>
-                    </div>
-
-                    <div className="information">
-                        <span><i className="fas fa-info-circle"></i></span>You have found { employees.length } members from your directory
-                    </div>
-
-                    <Link to="/employee/new" className="routerLink">
-                        <div>
-                            <div className="routerLink--icon"><i className="fas fa-folder-plus"></i></div>
-                            <div className="routerLink--title">Add new Employee</div>
                         </div>
-                    </Link>
 
-                    {successMessage}
+                        <div className="square1"></div>
+                        <div className="square2"></div>
+                        <div className="square3"></div>
 
-                    <ul className="employees">
-                        {employees.map((employee, index) => (
-                            <li key={`${employee.lastName}-${index}`}>
-                                <div className="employee">
-                                    <div className="employee__img"><img src={employee.avatar} alt=""/></div>
-                                    <div className="employee__head">{employee.firstName} {employee.lastName}</div>
-                                    <div className="employee__bottom--info-department">{employee.department}</div>
-                                    <div className="employee__bottom">
-                                        <div>
-                                            <span><i className="fas fa-street-view"></i></span>
-                                            <span>{employee.location}</span>
-                                        </div>
-                                        <div>
-                                            <span><i className="fas fa-at"></i></span>
-                                            <span>{employee.email}</span>
-                                        </div>
-                                        <div>
-                                            <span><i className="fas fa-phone-volume"></i></span>
-                                            <span>{employee.phone}</span>
-                                        </div>
-                                        
-                                        <div className="employee__bottom--info-experience">{employee.experience} years of experience</div>
-                                        <hr/>
-                                        <div className="employee__bottom--links">
-                                            <Link to={`/employee/${employee.id}`} className="employee__bottom--info-link"><div>View Profile</div></Link>
-                                            <button className="btn-delete" value={employee.id} type="button" onClick={this.handleDelete}>Delete</button>
-                                        </div>
-            
-                                    </div>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
+                        <div className="square4"></div>
+                        <div className="square5"></div>
+                        <div className="square6"></div>
+                    </form>
                 </div>
-            )
+
+                <div className="members">
+                    <h1 className="members-background">Members Directory</h1>
+                    <h1 className="members-header">Members Directory</h1>
+                </div>
+
+                <div className="information">
+                    <span><i className="fas fa-info-circle"></i></span>You have found { employees.length } members from your directory
+                </div>
+
+                <Link to="/employee/new" className="routerLink">
+                    <div>
+                        <div className="routerLink--icon"><i className="fas fa-folder-plus"></i></div>
+                        <div className="routerLink--title">Add new Employee</div>
+                    </div>
+                </Link>
+
+                {successMessage}
+
+                <ul className="employees">
+                    {employees.map((employee, index) => (
+                        <li key={`${employee.lastName}-${index}`}>
+                            <div className="employee">
+                                <div className="employee__img"><img src={employee.avatar} alt=""/></div>
+                                <div className="employee__head">{employee.firstName} {employee.lastName}</div>
+                                <div className="employee__bottom--info-department">{employee.department}</div>
+                                <div className="employee__bottom">
+                                    <div>
+                                        <span><i className="fas fa-street-view"></i></span>
+                                        <span>{employee.location}</span>
+                                    </div>
+                                    <div>
+                                        <span><i className="fas fa-at"></i></span>
+                                        <span>{employee.email}</span>
+                                    </div>
+                                    <div>
+                                        <span><i className="fas fa-phone-volume"></i></span>
+                                        <span>{employee.phone}</span>
+                                    </div>
+                                    
+                                    <div className="employee__bottom--info-experience">{employee.experience} years of experience</div>
+                                    <hr/>
+                                    <div className="employee__bottom--links">
+                                        <Link to={`/employee/${employee.id}`} className="employee__bottom--info-link"><div>View Profile</div></Link>
+                                        <button className="btn-delete" value={employee.id} type="button" onClick={this.handleDelete}>Delete</button>
+                                    </div>
+        
+                                </div>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        )
         }
     }
 }
