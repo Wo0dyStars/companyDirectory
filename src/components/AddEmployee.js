@@ -52,7 +52,7 @@ export default class AddEmployee extends React.Component {
     }
 
     render() {
-        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, success, errorLoading } = this.state;
+        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, success, errorLoading, isLoaded } = this.state;
 
         if ( errorLoading ) {
             return <div>Error: {errorLoading.message}</div>
