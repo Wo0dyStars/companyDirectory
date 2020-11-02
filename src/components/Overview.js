@@ -48,7 +48,7 @@ export default class Overview extends React.Component {
                     value: event.target.value
                 }
             } else return filter;
-        });
+        });        
 
         if ( !event.target.value || event.target.value === "select" ) {
             this.setState({ filters: this.state.filters.filter(f => f.key !== event.target.name) });
@@ -56,6 +56,8 @@ export default class Overview extends React.Component {
             if ( found ) { this.setState({ filters: currentFilters }); }
             else { this.setState({ filters: [ ...this.state.filters, {key: event.target.name, value: event.target.value} ] }) };
         }
+
+        if (!this.state.employees.length) { this.setState({ filters: [] }) };
     }
 
     handleChangeSorter = (event) => {
