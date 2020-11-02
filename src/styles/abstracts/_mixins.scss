@@ -1,0 +1,25 @@
+@mixin respond($breakpoint) {
+	@if $breakpoint == phone {
+		@media (max-width: 900px) {
+			@content;
+		}
+	}
+
+	@if $breakpoint == desktop {
+		@media (max-width: 1400px) {
+			@content;
+		}
+	}
+}
+
+@mixin flexCenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+@mixin absoluteCenter {
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%);
+}

@@ -16,7 +16,8 @@ export default class Overview extends React.Component {
             sorters: [["name", "p.firstName"], ["email", "p.email"], ["department", "d.name"], ["location", "l.name"]],
             currentSorter: "p.firstName",
             currentSorting: "ASC",
-            successOnDeletion: ""
+            successOnDeletion: "",
+            isComponentLoaded: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -27,9 +28,10 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
-        serverAPI("GET", "https://aqueous-atoll-68745.herokuapp.com/get.php")
+        serverAPI("GET", "get.php")
             .then(employees => {
-                this.setState({ isLoaded: true, employees: employees.data })
+                this.setState({ isLoaded: true, employees: employees.data });
+                setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
             })
             .catch((error) => {
                 this.setState({ isLoaded: true, error })
@@ -67,7 +69,7 @@ export default class Overview extends React.Component {
     handleDelete = (event) => {
 
         this.setState({ isLoaded: false });
-        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/delete.php", JSON.stringify({id: event.target.value}))
+        serverAPI("POST", "delete.php", JSON.stringify({id: event.target.value}))
         .then(() => {
             const person = this.state.employees.filter(employee => employee.id === event.target.value)[0];
             const personName = person.firstName + " " + person.lastName;
@@ -90,7 +92,7 @@ export default class Overview extends React.Component {
         filters += `orderdir=${this.state.currentSorting}`;
         
         this.setState({ isLoaded: false });
-        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/get.php?${filters}`)
+        serverAPI("GET", `get.php?${filters}`)
             .then(employees => this.setState({ isLoaded: true, employees: employees.data }))
             .catch((error) => this.setState({ isLoaded: true, error }));
     }
@@ -100,7 +102,7 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion } = this.state;
+        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isComponentLoaded } = this.state;
         
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
@@ -119,7 +121,7 @@ export default class Overview extends React.Component {
                     <input type="text" name="location" placeholder="Location" autoComplete="off" onChange={this.handleChange}/>
                 </div>
 
-                <div className="filters__filter">
+                <div className="filters__filter filters__filter--select">
                     <label htmlFor="department">Department</label>
                     <select name="department" defaultValue="select" autoComplete="off" onChange={this.handleChange}>
                         <option value="select">Department</option>
@@ -163,10 +165,10 @@ export default class Overview extends React.Component {
 
         return (
             <div className="employees-container">
-                <div className="employees-form">
+                <div className={isComponentLoaded ? "employees-form" : "employees-form animationHeader"}>
                     <form onSubmit={this.handleSubmit}>
                         <h1 className="main-header">Welcome to the your favourite</h1>
-                        <div>business <span>directory</span></div>
+                        <div className="main-title">business <span>directory</span></div>
                         <div className="employees-form--background">
                             
                             {filterInput}
@@ -240,7 +242,7 @@ export default class Overview extends React.Component {
                                     <hr/>
                                     <div className="employee__bottom--links">
                                         <Link to={`/employee/${employee.id}`} className="employee__bottom--info-link"><div>View Profile</div></Link>
-                                        <button className="btn-delete" value={employee.id} type="button" onClick={this.handleDelete}>Delete</button>
+                                        <button className="btn btn-delete" value={employee.id} type="button" onClick={this.handleDelete}>Delete</button>
                                     </div>
         
                                 </div>

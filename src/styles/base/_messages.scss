@@ -37,17 +37,16 @@
 }
 
 .success {
-	background-color: #76b852;
+	background-color: $color-success;
 }
 
 .error {
-	background-color: #ed213a;
+	background-color: $color-error;
 }
 
 .routerLink {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	@include flexCenter;
+
 	margin-top: 1rem;
 	color: white;
 	text-decoration: none;
@@ -61,7 +60,7 @@
 	div {
 		display: flex;
 		padding: .5rem;
-		background-color: #cb356b;
+		background-color: $color-pink;
 		border-radius: .6rem;
 
 		@include respond(phone) {

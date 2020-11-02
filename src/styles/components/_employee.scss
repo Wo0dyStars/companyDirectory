@@ -1,5 +1,13 @@
+.entranceEmployee {
+	animation: fadeInRightBig 1.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
 .employee_container {
 	width: 100%;
+
+	@include respond(phone) {
+		overflow: hidden;
+	}
 }
 
 .employee {
@@ -7,14 +15,14 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background: url("../images/background.jpg"), rgba(255, 255, 255, .7);
+		background: url("../../images/background.jpg"), rgba(255, 255, 255, .7);
 		background-blend-mode: screen;
 		background-position: center;
 		background-size: cover;
 
 		span {
 			background-color: rgba(255, 255, 255, .85);
-			color: #cb356b;
+			color: $color-pink;
 			padding: .4rem;
 			font-size: 1.1rem;
 			border-radius: .3rem;
@@ -26,15 +34,14 @@
 		}
 
 		&--avatar {
+			@include flexCenter;
+
 			width: 30rem;
 			height: 30rem;
-			background-color: #cb356b;
+			background-color: $color-pink;
 			color: white;
 			border-radius: 50%;
 			font-size: 3.4rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
 			margin: 2rem;
 			position: relative;
 			z-index: 2;
@@ -85,7 +92,7 @@
 				font-size: 4.5rem;
 				text-transform: capitalize;
 				font-family: 'Lobster', cursive;
-				color: #cb356b;
+				color: $color-pink;
 				max-width: 60rem;
 				overflow: hidden;
 				text-align: center;
@@ -99,7 +106,7 @@
 			&-department {
 				font-weight: 600;
 				font-size: 1.8rem;
-				color: #cb356b;
+				color: $color-pink;
 				opacity: .88;
 				text-align: center;
 
@@ -151,28 +158,24 @@
 		margin-bottom: 2rem;
 
 		&-background {
-			position: absolute;
-			color: #cb356b;
-			bottom: -7rem;
-			left: 50%;
-			transform: translateX(-50%);
+			@include absoluteCenter;
+			color: $color-pink;
+			bottom: -2rem;
 			font-size: 5rem;
 			opacity: 0.05;
 			letter-spacing: -.4rem;
 			user-select: none;
+			width: 100%;
 
 			@include respond(phone) {
-				font-size: 3rem;
-				left: 10%;
-				bottom: -3rem;
-				transform: translateX(0);
+				font-size: 4rem;
 			}
 		}
 
 		&-header {
 			font-size: 2rem;
 			font-family: 'Lobster', cursive;
-			color: #cb356b;
+			color: $color-pink;
 			text-align: center;
 		}
 	}
@@ -182,6 +185,7 @@
 		width: 12rem;
 		height: .4rem;
 		border: none;
+		margin: 2rem auto;
 	}
 
 	.employee-section {
@@ -189,7 +193,7 @@
 		margin: 0 auto;
 
 		@include respond(phone) {
-			width: 90%;
+			width: 100%;
 		}
 
 		&__inputs {
@@ -208,7 +212,7 @@
 			}
 
 			label {
-				background-color: #ffafbd;
+				background-color: $color-pink-light;
 				padding: 1rem;
 				color: white;
 				width: 50%;
@@ -218,7 +222,12 @@
 
 				@include respond(phone) {
 					width: 100%;
-					border-radius: 0;
+					padding: .5rem;
+					border-bottom-left-radius: 0;
+					border-top-left-radius: 1.4rem;
+					border-top-right-radius: 1.4rem;
+					text-align: center;
+					background-color: rgba(203, 53, 107, .4);
 				}
 			}
 
@@ -235,8 +244,9 @@
 
 				@include respond(phone) {
 					width: 100%;
-					padding: .4rem 0;
+					padding: .9rem 0;
 					border-radius: 0;
+					border: 1px solid rgba(203, 53, 107, .05);
 				}
 
 				&:focus {
@@ -258,10 +268,16 @@
 					left: 0;
 					font-size: 30rem;
 					transform: rotate(10deg);
-					color: #83a4d4;
+					color: $color-blue;
 					font-family: 'Lobster', cursive;
 					z-index: -1;
 					opacity: .1;
+
+					@include respond(phone) {
+						font-size: 25rem;
+						top: -3.5rem;
+						left: -1rem;
+					}
 				}
 
 				label {
@@ -273,7 +289,11 @@
 					background-color: rgba(203, 53, 107, .5);
 
 					@include respond(phone) {
+						padding: 0.5rem;
 						border-radius: 0;
+						border-top-left-radius: 1.4rem;
+						border-top-right-radius: 1.4rem;
+						background-color: rgba(203, 53, 107, .4);
 					}
 				}
 
@@ -301,7 +321,7 @@
 	justify-content: center !important;
 
 	.skill {
-		background-color: #83a4d4;
+		background-color: $color-blue;
 		text-transform: uppercase;
 		border-radius: .2rem;
 		color: white;
@@ -313,48 +333,4 @@
 	display: flex;
 	justify-content: center;
 	margin: 2rem 0;
-}
-
-.success-message {
-	text-align: center;
-	text-transform: capitalize;
-	font-size: 1.1rem;
-	background-color: #56ab2f;
-	width: 25rem;
-	margin: 0 auto;
-	border-radius: 3rem;
-	padding: .3rem;
-	color: white;
-}
-
-.btn {
-	border: none;
-	padding: 1rem;
-	margin: .5rem;
-	border-radius: .3rem;
-	text-transform: uppercase;
-	color: white;
-	cursor: pointer;
-	transition: all .1s ease;
-	opacity: 1;
-
-	&:focus {
-		outline: none;
-	}
-
-	&:hover {
-		opacity: 0.9;
-	}
-
-	&-edit {
-		background-color: #45b649;
-	}
-
-	&-save {
-		background-color: #56ab2f;
-	}
-
-	&-cancel {
-		background-color: #f00000;
-	}
 }

@@ -21,11 +21,16 @@ export default class AddEmployee extends React.Component {
             biography: "",
             avatar: "",
             error: "",
-            success: ""
+            success: "",
+            isComponentLoaded: false
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentDidMount() {
+        setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
     }
 
     handleChange = (event) => {
@@ -37,7 +42,7 @@ export default class AddEmployee extends React.Component {
         event.preventDefault();
 
         this.setState({ isLoaded: false });
-        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/insert.php", JSON.stringify(this.state))
+        serverAPI("POST", "insert.php", JSON.stringify(this.state))
             .then(() => this.setState(
                 { 
                     firstName: "", lastName: "", email: "", jobTitle: "", departmentID: 1, expertise: "", phone: "", biography: "", avatar: "",
@@ -52,7 +57,7 @@ export default class AddEmployee extends React.Component {
     }
 
     render() {
-        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, success, errorLoading, isLoaded } = this.state;
+        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
 
         if ( errorLoading ) {
             return <div>Error: {errorLoading.message}</div>
@@ -91,7 +96,7 @@ export default class AddEmployee extends React.Component {
                         ) : <div></div> }
 
 
-                    <button className="create-button" type="submit">Create New Employee</button>
+                    <button className="btn btn--pink mg-large" type="submit">Create New Employee</button>
                 </form>
             )
 
@@ -120,7 +125,7 @@ export default class AddEmployee extends React.Component {
             }
 
             return (
-                <div className="newEmployee">
+                <div className={isComponentLoaded ? "newEmployee" : "newEmployee entranceAddEmployee"}>
                     <Link to="/" className="routerLink">
                         <div>
                             <div className="routerLink--icon"><i className="fas fa-users"></i></div>

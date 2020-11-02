@@ -1,3 +1,19 @@
+.animationHeader {
+	animation: greyOut .5s linear;
+
+	@include respond(phone) {
+		animation: greyOutMobile .5s linear;
+	}
+
+	.main-header {
+		animation: fadeInRightBig .7s ease;
+	}
+
+	.main-title {
+		animation: fadeInLeftBig 1s ease;
+	}
+}
+
 .employees-container {
 	display: flex;
 	flex-direction: column;
@@ -72,7 +88,7 @@
 		border: none;
 		border-top-right-radius: 1rem;
 		border-bottom-right-radius: 1rem;
-		background-color: #cb356b;
+		background-color: $color-pink;
 		text-transform: uppercase;
 		color: white;
 		cursor: pointer;
@@ -100,6 +116,11 @@
 			width: 100%;
 			margin: 0;
 			padding: .5rem;
+
+			&--select {
+				border-bottom-right-radius: 1rem;
+				border-bottom-left-radius: 1rem;
+			}
 		}
 
 		&:first-child {
@@ -135,7 +156,7 @@
 	}
 
 	input[type="radio"]:checked + label {
-		background-color: #cb356b;
+		background-color: $color-pink;
 		color: white;
 	}
 
@@ -168,8 +189,8 @@
 		}
 
 		input[type="radio"]:checked + label {
-			color: #cb356b;
-			border-bottom: 3px solid #cb356b;
+			color: $color-pink;
+			border-bottom: 3px solid $color-pink;
 		}
 	}
 }
@@ -182,13 +203,13 @@
 .square6 {
 	width: 50px;
 	height: 50px;
-	background-color: #cb356b;
+	background-color: $color-pink;
 	color: white;
 	position: absolute;
 	bottom: -1.6rem;
 	z-index: -1000;
 	border-radius: 1rem;
-	border: 1px solid #cb356b;
+	border: 1px solid $color-pink;
 	opacity: 0.1;
 }
 
@@ -219,7 +240,7 @@ h1 {
 	font-family: 'Lobster', cursive;
 
 	& + div {
-		color: #cb356b;
+		color: $color-pink;
 		text-transform: uppercase;
 		font-size: 4rem;
 		margin-bottom: .4rem;
@@ -253,17 +274,20 @@ h1 {
 }
 
 .information {
-	background-color: #83a4d4;
+	@include flexCenter;
+
+	background-color: $color-blue;
 	color: white;
 	text-align: center;
 	width: 30%;
 	margin: 0 auto;
 	margin-top: 2rem;
 	padding: .3rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	border-radius: .3rem;
+
+	@include respond(desktop) {
+		width: 60%;
+	}
 
 	@include respond(phone) {
 		width: 93%;
@@ -279,7 +303,7 @@ h1 {
 .design-element {
 	width: 50px;
 	height: 50px;
-	background-color: #cb356b;
+	background-color: $color-pink;
 	border-radius: 50%;
 	color: white;
 	position: absolute;
@@ -290,43 +314,44 @@ h1 {
 .members {
 	position: relative;
 	text-align: center;
-	margin-bottom: 2rem;
+	margin: 4rem;
 
 	@include respond(phone) {
 		margin: 2rem 0;
 	}
 
 	&-background {
-		position: absolute;
-		color: #cb356b;
+		@include absoluteCenter;
+
+		color: $color-pink;
 		bottom: 0;
-		left: 50%;
-		transform: translateX(-50%);
 		font-size: 5rem;
 		opacity: 0.05;
 		letter-spacing: -.4rem;
 		user-select: none;
+		width: 100%;
+
+		@include respond(desktop) {
+			font-size: 4rem;
+		}
 
 		@include respond(phone) {
 			font-size: 3.5rem;
-			left: 10%;
-			transform: translateX(0);
 		}
 	}
 
 	&-header {
-		color: #cb356b;
+		color: $color-pink;
 		font-size: 2.4rem;
 	}
 
 	&::after {
+		@include absoluteCenter;
+
 		content: "";
 		width: 6rem;
 		height: .3rem;
-		background-color: #cb356b;
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
+		background-color: $color-pink;
 		bottom: -1rem;
 	}
 }
@@ -337,42 +362,43 @@ h1 {
 	grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
 	margin-block-start: 0;
 	padding-inline-start: 0;
-
 	width: 100%;
+	animation: fadeIn 2s linear;
 
 	&-form {
 		width: 100%;
 		padding: 1rem 0;
-		background: url("../images/background.jpg");
+		background: url("../../images/background.jpg");
 		background-position: center;
 		background-size: cover;
 		min-height: 40vh;
-		border-bottom: 4px solid #cb356b;
+		border-bottom: 4px solid $color-pink;
 		position: relative;
 		margin-bottom: 4rem;
+		backface-visibility: hidden;
 
 		@include respond(phone) {
 			min-height: 50vh;
 		}
 
 		&--background {
+			@include flexCenter;
+			@include absoluteCenter;
+
 			border-radius: 2rem;
 			padding: 3rem;
 			width: 50%;
-			display: flex;
-			align-items: center;
 			flex-direction: column;
-			justify-content: center;
 			margin: 0 auto;
 			overflow: hidden;
-			position: absolute;
 			bottom: -7rem;
-			left: 50%;
-			transform: translateX(-50%);
+
+			@include respond(desktop) {
+				width: 100%;
+			}
 
 			@include respond(phone) {
 				bottom: -7.5rem;
-				width: 100%;
 			}
 		}
 
@@ -400,79 +426,12 @@ h1 {
 			}
 		}
 
-		&__submit_wrap {
-			display: flex;
-			justify-content: center;
-			margin-top: 1rem;
-		}
-
-		&__submit {
-			background-color: green;
-			color: white;
-			border: 1px solid rgba(0, 0, 0, .1);
-			border-radius: .3rem;
-			padding: 1rem;
-			cursor: pointer;
-			font-size: 1.2rem;
-
-			&:focus {
-				outline: none;
-			}
-		}
-
-		&__filtergroup {
-			padding: 1rem;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-
-			&-more {
-				padding: 0.2rem 1.2rem;
-
-				button {
-					background-color: green;
-					color: white;
-					border: 1px solid rgba(0, 0, 0, .1);
-					border-radius: .3rem;
-					padding: .4rem;
-					cursor: pointer;
-
-					&:focus {
-						outline: none;
-					}
-				}
-			}
-
-			&-x_wrap {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			&-x {
-				margin-left: .2rem;
-				border-radius: .3rem;
-				padding: 0.2rem .5rem;
-				background-color: red;
-				color: white;
-				border: 1px solid rgba(0, 0, 0, .1);
-				cursor: pointer;
-
-				&:focus {
-					outline: none;
-				}
-			}
-		}
-
 		&__filterline {
 			display: flex;
 			margin: .2rem auto;
 
 			&--index {
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				@include flexCenter;
 
 				margin-right: .5rem;
 				font-size: 1.1rem;
@@ -519,21 +478,31 @@ h1 {
 		backface-visibility: hidden;
 		box-shadow: .1rem .1rem 1rem rgba(0, 0, 0, .05);
 
+		@include respond(phone) {
+			margin: 0;
+			margin-top: 4rem;
+			border-radius: 0;
+			border-top: 5px solid rgba(0, 0, 0, .02);
+			border-bottom: 5px solid rgba(0, 0, 0, .02);
+		}
+
 		&:hover {
-			border-bottom: 1px solid #cb356b;
+			border-bottom: 1px solid $color-pink;
 			transform: translateY(-1rem);
 		}
 
 		&__img {
 			width: 10rem;
 			height: 10rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+			@include flexCenter;
 			margin: 0 auto;
 			margin-bottom: 0.5rem;
 			position: relative;
 			top: -2.5rem;
+
+			@include respond(phone) {
+				margin-bottom: -1.4rem;
+			}
 
 			& > img {
 				background-size: contain;
@@ -546,12 +515,16 @@ h1 {
 		}
 
 		&__head {
-			color: #cb356b;
+			color: $color-pink;
 			font-weight: 700;
 			font-size: 1.4rem;
 			padding: .1rem;
 			text-align: center;
 			text-transform: capitalize;
+
+			@include respond(phone) {
+				font-size: 1.2rem;
+			}
 		}
 
 		&__bottom {
@@ -564,6 +537,7 @@ h1 {
 			&--links {
 				display: flex;
 				justify-content: space-evenly;
+				margin-top: .5rem;
 
 				& > * {
 					margin-right: 1rem;
@@ -571,7 +545,7 @@ h1 {
 
 				.btn-delete {
 					border: none;
-					background-color: #f00000;
+					background-color: $color-cancel;
 					border-radius: .2rem;
 					color: white;
 					opacity: .7;
@@ -613,7 +587,7 @@ h1 {
 				}
 
 				&-department {
-					background-color: #cb356b;
+					background-color: $color-pink;
 					color: white;
 					display: inline-block;
 					padding: 0.2rem 0.2rem;
@@ -622,8 +596,9 @@ h1 {
 				}
 
 				&-link {
+					@include flexCenter;
 					text-decoration: none;
-					background-color: #cb356b;
+					background-color: $color-pink;
 					padding: .2rem .7rem;
 					margin-top: .2rem;
 					border-radius: .2rem;
@@ -638,15 +613,5 @@ h1 {
 				}
 			}
 		}
-	}
-}
-
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 1;
 	}
 }

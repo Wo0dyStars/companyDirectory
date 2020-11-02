@@ -1,23 +1,14 @@
-@import "media_queries.scss";
-@import "app.scss";
-@import "navigation.scss";
-@import "overview.scss";
-@import "filter.scss";
-@import "employee.scss";
-@import "edit_employee.scss";
-@import "add_employee.scss";
-@import "loading_spinner.scss";
-@import "messages.scss";
+@import "abstracts/_mixins";
+@import "abstracts/_variables";
 
-body {
-	margin: 0;
-	overflow-y: scroll;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
-		'Droid Sans', 'Helvetica Neue', sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
+@import "base/_base";
+@import "base/_animations";
+@import "base/_utilities";
+@import "base/_loading_spinner";
+@import "base/_messages";
 
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
+@import "app";
+
+@import "components/_overview.scss";
+@import "components/_employee";
+@import "components/_add_employee";

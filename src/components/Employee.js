@@ -12,7 +12,8 @@ class Employee extends React.Component {
             employee: {},
             editEmployee: {},
             isEditing: false,
-            successOnSave: ""
+            successOnSave: "",
+            isComponentLoaded: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -24,13 +25,17 @@ class Employee extends React.Component {
 
     componentDidMount() {
         const userIndex = this.props.match.params.index;
-        serverAPI("GET", `https://aqueous-atoll-68745.herokuapp.com/get.php?id=${userIndex}`)
-            .then((foundEmployee) => this.setState({
-                isLoaded: true,
-                employee: foundEmployee.data[0],
-                editEmployee: foundEmployee.data[0]
-            }))
-            .catch((error) => this.setState({ isLoaded: true, error }));
+        serverAPI("GET", `get.php?id=${userIndex}`)
+            .then((foundEmployee) => {
+                this.setState({
+                    isLoaded: true,
+                    employee: foundEmployee.data[0],
+                    editEmployee: foundEmployee.data[0]
+                });
+                
+                setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
+            })
+            .catch((error) => this.setState({ isLoaded: true, error, isComponentLoaded: true }));
     }
 
     handleChange = (event) => {
@@ -57,7 +62,7 @@ class Employee extends React.Component {
 
     handleSave = (event) => {
         this.setState({ isLoaded: false });
-        serverAPI("POST", "https://aqueous-atoll-68745.herokuapp.com/update.php", JSON.stringify(this.state.editEmployee))
+        serverAPI("POST", "update.php", JSON.stringify(this.state.editEmployee))
             .then(() => this.setState({ successOnSave: "You have just saved your updated values.", isLoaded: true }))
             .catch((error) => this.setState({ isLoaded: true, error }));
 
@@ -73,7 +78,7 @@ class Employee extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employee, editEmployee, isEditing, successOnSave } = this.state;
+        const { error, isLoaded, employee, editEmployee, isEditing, successOnSave, isComponentLoaded } = this.state;
         
         let successMessage = <div></div>;
         if ( successOnSave ) {
@@ -126,7 +131,7 @@ class Employee extends React.Component {
             }
 
             return (
-                <div className="employee_container">
+                <div className={isComponentLoaded ? "employee_container" : "employee_container entranceEmployee"}>
 
                     <div className="employee__header">
                         <Link to="/" className="routerLink">
@@ -156,13 +161,13 @@ class Employee extends React.Component {
                         { isEditing ? 
                             ( 
                                 <div>
-                                    <button className="btn btn-cancel" type="button" onClick={this.handleCancel}>Cancel</button>
-                                    <button className="btn btn-save" type="button" onClick={this.handleSave}>Save updates</button>
+                                    <button className="btn btn-cancel mg-small" type="button" onClick={this.handleCancel}>Cancel</button>
+                                    <button className="btn btn-save mg-small" type="button" onClick={this.handleSave}>Save updates</button>
                                 </div> 
                             ) : 
                             (
                                 <div>
-                                    <button className="btn btn-edit" type="button" onClick={this.toggleEdit}>Edit</button>
+                                    <button className="btn btn-edit mg-small" type="button" onClick={this.toggleEdit}>Edit</button>
                                 </div>
                             )
                         }

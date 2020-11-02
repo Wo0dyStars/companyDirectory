@@ -1,0 +1,44 @@
+.btn {
+	padding: 1rem;
+
+	color: white;
+	cursor: pointer;
+	text-transform: uppercase;
+	transition: all .1s ease;
+	opacity: 1;
+
+	border: none;
+	border-radius: .3rem;
+	box-shadow: .1rem .1rem 1rem rgba(0, 0, 0, .1);
+
+	&:focus {
+		outline: none;
+	}
+
+	&:hover {
+		opacity: 0.9;
+	}
+
+	&-edit {
+		background-color: $color-edit;
+	}
+
+	&-save {
+		background-color: $color-save;
+	}
+
+	&-cancel {
+		background-color: $color-cancel;
+	}
+
+	&--pink {
+		background-color: $color-pink;
+	}
+}
+
+.mg-large {
+	margin: 3rem;
+}
+.mg-small {
+	margin: .5rem;
+}
