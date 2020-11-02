@@ -114,7 +114,7 @@ export default class Overview extends React.Component {
         let filterInput = (
             <div className="filters">
                 <div className="filters__filter">
-                    <label htmlFor="keyWord">What are you looking for?</label>
+                    <label htmlFor="keyWord">Any keyword</label>
                     <input type="text" name="keyWord" placeholder="Keyword" autoComplete="off" onChange={this.handleChange}/>
                 </div>
 
