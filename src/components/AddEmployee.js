@@ -34,7 +34,7 @@ export default class AddEmployee extends React.Component {
     }
 
     handleChange = (event) => {
-        if ( event.target.name === "departmentID" ) { this.setState({ departmentID: Number(event.target.value) }) }
+        if ( event.target.name === "departmentID" ) { this.setState({ departmentID: Number(event.target.value ) }) }
         else { this.setState({ [event.target.name]: event.target.value }); }
     }
 
@@ -69,7 +69,7 @@ export default class AddEmployee extends React.Component {
         } else {
             // Display departments with indices given in database
             const departments = Departments.map((department, index) => (
-                <option key={index} value={index + 1}>{ department }</option>
+                <option key={index} value={index}>{ department }</option>
             ))
 
             let newEmployeeForm = (
@@ -79,7 +79,7 @@ export default class AddEmployee extends React.Component {
                     <input type="email" name="email" value={email} placeholder="Your email address" required onChange={this.handleChange} />
                     
                     <input type="text" name="jobTitle" value={jobTitle} placeholder="Job Title" onChange={this.handleChange} />
-                    <select name="departmentID" value={departmentID-1} onChange={this.handleChange}>{ departments }</select>
+                    <select name="departmentID" value={departmentID} onChange={this.handleChange}>{ departments }</select>
                     <div className="expertise-list">
                         Please list the skills separated by a comma
                     </div>
@@ -128,8 +128,7 @@ export default class AddEmployee extends React.Component {
                 <div className={isComponentLoaded ? "newEmployee" : "newEmployee entranceAddEmployee"}>
                     <Link to="/" className="routerLink">
                         <div>
-                            <div className="routerLink--icon"><i className="fas fa-users"></i></div>
-                            <div className="routerLink--title">See All Employees</div>
+                            <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
                         </div>
                     </Link>
 

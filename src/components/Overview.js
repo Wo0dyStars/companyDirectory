@@ -1,6 +1,7 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import $ from "jquery";
 
 const Departments = ["Human Resources", "Sales", "Marketing", "Legal", "Services", "Research and Development", "Product Management", "Training", "Support", "Engineering", "Accounting", "Business Development"];
 
@@ -17,7 +18,8 @@ export default class Overview extends React.Component {
             currentSorter: "p.firstName",
             currentSorting: "ASC",
             successOnDeletion: "",
-            isComponentLoaded: false
+            isComponentLoaded: false,
+            isArrowVisible: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -28,6 +30,11 @@ export default class Overview extends React.Component {
     }
 
     componentDidMount() {
+        let scroll = this;
+        document.addEventListener("scroll", function(event) {
+            scroll.toggleVisibility();
+        })
+
         serverAPI("GET", "get.php")
             .then(employees => {
                 this.setState({ isLoaded: true, employees: employees.data });
@@ -36,6 +43,16 @@ export default class Overview extends React.Component {
             .catch((error) => {
                 this.setState({ isLoaded: true, error })
             });
+    }
+
+    toggleVisibility() {
+        if ( window.pageYOffset > 300 ) {
+            this.setState({ isArrowVisible: true });
+        } else { this.setState({ isArrowVisible: false }) };
+    }
+
+    scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     handleChange = (event) => {
@@ -104,7 +121,7 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isComponentLoaded } = this.state;
+        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isArrowVisible } = this.state;
         
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
@@ -114,17 +131,14 @@ export default class Overview extends React.Component {
         let filterInput = (
             <div className="filters">
                 <div className="filters__filter">
-                    <label htmlFor="keyWord">Any keyword</label>
                     <input type="text" name="keyWord" placeholder="Keyword" autoComplete="off" onChange={this.handleChange}/>
                 </div>
 
                 <div className="filters__filter">
-                    <label htmlFor="location">Location</label>
                     <input type="text" name="location" placeholder="Location" autoComplete="off" onChange={this.handleChange}/>
                 </div>
 
                 <div className="filters__filter filters__filter--select">
-                    <label htmlFor="department">Department</label>
                     <select name="department" defaultValue="select" autoComplete="off" onChange={this.handleChange}>
                         <option value="select">Department</option>
                         { departments }
@@ -132,7 +146,7 @@ export default class Overview extends React.Component {
                 </div>
 
                 <div>
-                    <button type="submit">Search</button>
+                    <button type="submit"><i className="fas fa-search"></i></button>
                 </div>
             </div>
         )
@@ -167,91 +181,101 @@ export default class Overview extends React.Component {
 
         return (
             <div className="employees-container">
-                <div className={isComponentLoaded ? "employees-form" : "employees-form animationHeader"}>
-                    <form onSubmit={this.handleSubmit}>
-                        <h1 className="main-header">Welcome to the your favourite</h1>
-                        <div className="main-title">business <span>directory</span></div>
-                        <div className="employees-form--background">
-                            
-                            {filterInput}
 
-                            <div className="employees-form__sortinggroup">
-                                <div>
-                                    {sorterInputs}
-                                </div>
-                                
-                                <div className="sorter--sortby">
-                                    <input key="sortby1" type="radio" id="sortby1" name="sortby" checked={ "ASC" === currentSorting } value="ASC" onChange={this.handleChangeSorting}/>
-                                    <label htmlFor="sortby1">ASC</label>
-
-                                    <input key="sortby2" type="radio" id="sortby2" name="sortby" checked={ "DESC" === currentSorting } value="DESC" onChange={this.handleChangeSorting}/>
-                                    <label htmlFor="sortby2">DESC</label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div className="square1"></div>
-                        <div className="square2"></div>
-                        <div className="square3"></div>
-
-                        <div className="square4"></div>
-                        <div className="square5"></div>
-                        <div className="square6"></div>
-                    </form>
-                </div>
+                { isArrowVisible && (
+                    <div onClick={() => this.scrollToTop()} className="floating-arrow"><i className="fas fa-angle-double-up"></i></div>
+                ) }
 
                 <div className="members">
                     <h1 className="members-background">Members Directory</h1>
                     <h1 className="members-header">Members Directory</h1>
                 </div>
 
-                <div className="information">
-                    <span><i className="fas fa-info-circle"></i></span>You have found { employees.length } members from your directory
-                </div>
-
-                <Link to="/employee/new" className="routerLink">
-                    <div>
-                        <div className="routerLink--icon"><i className="fas fa-folder-plus"></i></div>
-                        <div className="routerLink--title">Add new Employee</div>
-                    </div>
-                </Link>
-
                 {successMessage}
 
-                <ul className="employees">
-                    {employees.map((employee, index) => (
-                        <li key={`${employee.lastName}-${index}`}>
-                            <div className="employee">
-                                <div className="employee__img"><img src={employee.avatar} alt=""/></div>
-                                <div className="employee__head">{employee.firstName} {employee.lastName}</div>
-                                <div className="employee__bottom--info-department">{employee.department}</div>
-                                <div className="employee__bottom">
-                                    <div>
-                                        <span><i className="fas fa-street-view"></i></span>
-                                        <span>{employee.location}</span>
+                <form onSubmit={this.handleSubmit}>
+                    {filterInput}
+
+                    <div className="employees-form__sortinggroup">
+                        <div>
+                            {sorterInputs}
+                        </div>
+                        
+                        <div className="sorter--sortby">
+                            <input key="sortby1" type="radio" id="sortby1" name="sortby" checked={ "ASC" === currentSorting } value="ASC" onChange={this.handleChangeSorting}/>
+                            <label htmlFor="sortby1" className="sorter--sortby__asc"><i className="fas fa-sort-up"></i></label>
+
+                            <input key="sortby2" type="radio" id="sortby2" name="sortby" checked={ "DESC" === currentSorting } value="DESC" onChange={this.handleChangeSorting}/>
+                            <label htmlFor="sortby2" className="sorter--sortby__desc"><i className="fas fa-sort-down"></i></label>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="extra-information">
+                    <div className="information">
+                        <span><i className="fas fa-info-circle"></i></span>{ employees.length } members found
+                    </div>
+
+                    <Link to="/employee/new" className="routerLink">
+                        <div>
+                            <div className="routerLink--icon"><i className="fas fa-user-plus"></i></div>
+                        </div>
+                    </Link>
+                </div>
+
+                <article className="employee-table">
+                    <div className="employee-table__heading">
+                        <div>Photo</div>
+                        <div>Name</div>
+                        <div>Email Address</div>
+                        <div>Availability</div>
+                        <div></div>
+                    </div>
+
+                    { employees.map((employee, index) => (
+                        <div key={`${employee.firstName}-${index}`} className="employee-table__employee">
+                            <div className="employee-table__employee--avatar">
+                                <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
+                            </div>
+
+                            <div className="employee-table__employee--credentials">
+                                <Link to={`/employee/${employee.id}`} style={{textDecoration: "none"}}>
+                                    <div className="employee-table__employee--name">
+                                        {employee.firstName} {employee.lastName}
                                     </div>
-                                    <div>
-                                        <span><i className="fas fa-at"></i></span>
-                                        <span>{employee.email}</span>
-                                    </div>
-                                    <div>
-                                        <span><i className="fas fa-phone-volume"></i></span>
-                                        <span>{employee.phone}</span>
-                                    </div>
-                                    
-                                    <div className="employee__bottom--info-experience">{employee.experience} years of experience</div>
-                                    <hr/>
-                                    <div className="employee__bottom--links">
-                                        <Link to={`/employee/${employee.id}`} className="employee__bottom--info-link"><div>View Profile</div></Link>
-                                        <button className="btn btn-delete" value={employee.id} type="button" onClick={this.handleDelete}>Delete</button>
-                                    </div>
-        
+                                </Link>
+                                
+                                <div className="employee-table__employee--department"> 
+                                    { employee.department }
+                                </div>
+                                <div className="employee-table__employee--location"> 
+                                    { employee.location }
                                 </div>
                             </div>
-                        </li>
-                    ))}
-                </ul>
+
+                            <div className="employee-table__employee--email">
+                                { employee.email }
+                            </div>
+
+                            { employee.isAvailable ? (
+                                <div className="employee-table__employee--available">
+                                    <span></span>
+                                    <span>Available</span>
+                                </div>
+                            ) : (
+                                <div className="employee-table__employee--out">
+                                    <span></span>
+                                    <span>Out</span>
+                                </div>
+                            ) }
+
+                            <div className="employee-table__employee--more">
+                                <Link to={`/employee/${employee.id}`} className="employee-table__employee--link"><span><i className="fas fa-external-link-alt"></i></span></Link>
+                                <button className="btn employee-table__employee--delete" value={employee.id} type="button" onClick={this.handleDelete}>X</button>
+                            </div>
+                        </div>
+                    )) }
+                </article>
             </div>
         )
         }

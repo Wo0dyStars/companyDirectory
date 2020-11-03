@@ -1,5 +1,5 @@
 .entranceEmployee {
-	animation: fadeInRightBig 1.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+	animation: fadeInRightBig .5s ease;
 }
 
 .employee_container {
@@ -48,6 +48,8 @@
 			overflow: hidden;
 
 			@include respond(phone) {
+				margin: 0;
+				width: 100%;
 				wodth: 20rem;
 				height: 20rem;
 				border-radius: 0;
@@ -86,6 +88,7 @@
 		&--middle {
 			margin: 0 2rem;
 			padding: 1rem;
+			color: white;
 
 			&-fullname {
 				font-weight: 800;
@@ -116,7 +119,6 @@
 			}
 
 			&-employeeID {
-				color: rgba(255, 255, 255, .85);
 				padding: .5rem 0;
 			}
 
@@ -140,7 +142,7 @@
 			width: 100%;
 			position: relative;
 			bottom: 0;
-			background-color: rgba(203, 53, 107, .8);
+			background-color: rgb(236, 206, 201);
 
 			@include respond(phone) {
 				font-size: .6rem;
@@ -149,8 +151,17 @@
 	}
 }
 
+.controls {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	background-color: rgba(236, 206, 201, .4);
+}
+
 .employee-section-container {
 	width: 100%;
+	margin-top: 5rem;
 
 	.employee-text {
 		position: relative;
@@ -174,7 +185,6 @@
 
 		&-header {
 			font-size: 2rem;
-			font-family: 'Lobster', cursive;
 			color: $color-pink;
 			text-align: center;
 		}
@@ -332,5 +342,4 @@
 .edit-controls {
 	display: flex;
 	justify-content: center;
-	margin: 2rem 0;
 }

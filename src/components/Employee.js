@@ -134,12 +134,30 @@ class Employee extends React.Component {
                 <div className={isComponentLoaded ? "employee_container" : "employee_container entranceEmployee"}>
 
                     <div className="employee__header">
-                        <Link to="/" className="routerLink">
-                            <div>
-                                <div className="routerLink--icon"><i className="fas fa-users"></i></div>
-                                <div className="routerLink--title">See All Employees</div>
+                        <div className="controls">
+                            <Link to="/" className="routerLink">
+                                <div>
+                                    <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
+                                </div>
+                            </Link>
+
+                            <div className="edit-controls">
+                                { isEditing ? 
+                                    ( 
+                                        <div>
+                                            <button className="btn btn-cancel mg-small" type="button" onClick={this.handleCancel}>Cancel</button>
+                                            <button className="btn btn-save mg-small" type="button" onClick={this.handleSave}>Save updates</button>
+                                        </div> 
+                                    ) : 
+                                    (
+                                        <div>
+                                            <button className="btn btn-edit mg-small" type="button" onClick={this.toggleEdit}>Edit</button>
+                                        </div>
+                                    )
+                                }
                             </div>
-                        </Link>
+                        </div>
+
                         <div className="employee__header--avatar"> 
                             <img src={employee.avatar} alt=""/> 
                             <div className="rotated-square rotated-square-1"></div>
@@ -155,22 +173,6 @@ class Employee extends React.Component {
                             <div className="employee__header--right-phone"> <span><i className="fas fa-phone-volume"></i></span> { editEmployee.phone } </div>
                             <div className="employee__header--right-email"> <span><i className="fas fa-at"></i></span> { editEmployee.email } </div>
                         </div>
-                    </div>
-
-                    <div className="edit-controls">
-                        { isEditing ? 
-                            ( 
-                                <div>
-                                    <button className="btn btn-cancel mg-small" type="button" onClick={this.handleCancel}>Cancel</button>
-                                    <button className="btn btn-save mg-small" type="button" onClick={this.handleSave}>Save updates</button>
-                                </div> 
-                            ) : 
-                            (
-                                <div>
-                                    <button className="btn btn-edit mg-small" type="button" onClick={this.toggleEdit}>Edit</button>
-                                </div>
-                            )
-                        }
                     </div>
 
                     {successMessage}

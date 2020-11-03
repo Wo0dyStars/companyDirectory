@@ -18,67 +18,80 @@
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-
-	label {
-		display: flex;
-		justify-content: center;
-		font-size: 1.6rem;
-		margin: 1rem;
-		font-weight: 700;
-		color: white;
-	}
+	background-color: rgba(255, 242, 240, .4);
+	overflow: hidden;
 }
 
 .filters {
 	display: flex;
+	justify-content: space-evenly;
+	margin: 0 auto;
+	width: 45%;
+	margin-top: 3rem;
+	background-color: rgba(255, 242, 240, 1);
+	border-radius: 3rem;
 
 	@include respond(phone) {
 		flex-direction: column;
 		align-items: center;
-		width: 90%;
+		width: 100%;
+		margin-top: 2rem;
+		background-color: rgba(255, 175, 189, .1);
+		border-radius: 0;
 	}
 
-	label {
-		color: black;
-		font-size: .9rem;
-		margin: .2rem 0;
-		text-align: left;
-		text-transform: uppercase;
-
-		@include respond(phone) {
-			font-size: .7rem;
-		}
+	input:first-child {
+		border-top-left-radius: 3rem;
+		border-bottom-left-radius: 3rem;
 	}
 
 	input,
 	select {
+		height: 4rem;
 		border: none;
 		width: 10rem;
 		text-align: left;
 		margin-left: 0;
+		background-color: rgba(255, 242, 240, 1);
+		padding: 1rem;
+		border-bottom: 1px solid transparent;
+		transition: all .4s ease;
 
 		@include respond(phone) {
 			width: 100%;
+			text-align: center;
+			height: 3rem;
+			border-bottom: 1px solid rgba(255, 175, 189, .15);
+			font-weight: 300;
+			font-size: 1.2rem;
 		}
 
 		&::placeholder {
 			color: rgba(0, 0, 0, .5);
+
+			@include respond(phone) {
+				color: rgba(0, 0, 0, .3);
+				font-weight: 300;
+				font-size: 1.2rem;
+			}
 		}
 
 		&:focus {
 			outline: none;
-			background-color: transparent;
 		}
 	}
 
 	select {
 		width: 12rem;
+		scroll-behavior: smooth;
 
 		@include respond(phone) {
 			width: 100%;
+			height: 4rem;
 		}
 		option {
 			color: rgba(0, 0, 0, .7);
+			background-color: rgba(255, 242, 240, 1);
 		}
 	}
 
@@ -88,15 +101,19 @@
 		border: none;
 		border-top-right-radius: 1rem;
 		border-bottom-right-radius: 1rem;
-		background-color: $color-pink;
 		text-transform: uppercase;
-		color: white;
+		color: $color-pink;
 		cursor: pointer;
+		font-size: 1.5rem;
+		background-color: rgba(255, 242, 240, 1);
 
 		@include respond(phone) {
 			margin-top: .3rem;
 			border-radius: 1rem;
 			padding: .5rem;
+			background-color: transparent;
+			color: $color-pink;
+			font-size: 1.3rem;
 		}
 
 		&:focus {
@@ -108,9 +125,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		background-color: white;
-		padding: .7rem;
-		border-right: 1px solid rgba(0, 0, 0, .1);
 
 		@include respond(phone) {
 			width: 100%;
@@ -118,8 +132,7 @@
 			padding: .5rem;
 
 			&--select {
-				border-bottom-right-radius: 1rem;
-				border-bottom-left-radius: 1rem;
+				display: none;
 			}
 		}
 
@@ -137,13 +150,17 @@
 
 .sorter {
 	label {
+		display: flex;
+		justify-content: center;
 		padding: .4rem;
 		font-size: 1rem;
+		margin: 1rem;
+		font-weight: 700;
 		text-transform: capitalize;
-		border-radius: .3rem;
 		transition: all .3s ease;
 		cursor: pointer;
 		color: rgba(0, 0, 0, .4);
+		border-bottom: 3px solid transparent;
 
 		@include respond(phone) {
 			font-size: .7rem;
@@ -156,29 +173,21 @@
 	}
 
 	input[type="radio"]:checked + label {
-		background-color: $color-pink;
-		color: white;
+		border-bottom: 3px solid $color-pink;
 	}
 
 	&--sortby {
-		display: flex;
-
-		@include respond(phone) {
-			justify-content: center;
-		}
+		@include flexCenter;
 
 		label {
-			margin: 1rem 0;
-			padding: .4rem;
-			font-size: 1rem;
+			font-size: 1.6rem;
 			text-transform: capitalize;
 			transition: all .3s ease;
 			color: rgba(0, 0, 0, .4);
 			cursor: pointer;
-			border-bottom: 3px solid transparent;
 
 			@include respond(phone) {
-				font-size: .7rem;
+				font-size: 1.3rem;
 				padding: .1rem;
 				margin: 0;
 			}
@@ -190,125 +199,39 @@
 
 		input[type="radio"]:checked + label {
 			color: $color-pink;
-			border-bottom: 3px solid $color-pink;
 		}
 	}
 }
 
-.square1,
-.square2,
-.square3,
-.square4,
-.square5,
-.square6 {
-	width: 50px;
-	height: 50px;
-	background-color: $color-pink;
-	color: white;
-	position: absolute;
-	bottom: -1.6rem;
-	z-index: -1000;
-	border-radius: 1rem;
-	border: 1px solid $color-pink;
-	opacity: 0.1;
-}
-
-.square2 {
-	left: 5rem;
-}
-
-.square3 {
-	left: 10rem;
-}
-
-.square4 {
-	right: 0;
-}
-
-.square5 {
-	right: 5rem;
-}
-
-.square6 {
-	right: 10rem;
-}
-
-h1 {
-	color: #24243e;
-	font-size: 2.2rem;
-	margin-bottom: .4rem;
-	font-family: 'Lobster', cursive;
-
-	& + div {
-		color: $color-pink;
-		text-transform: uppercase;
-		font-size: 4rem;
-		margin-bottom: .4rem;
-		text-align: center;
-		font-weight: 900;
-		font-family: 'Raleway', sans-serif;
-
-		@include respond(phone) {
-			font-size: 2rem;
-		}
-
-		span {
-			color: white;
-		}
-	}
-}
-
-.main-header {
-	text-align: center;
-	font-size: 2rem;
-	font-family: 'Lobster', cursive;
+.extra-information {
+	display: flex;
+	justify-content: space-between;
+	margin: 1rem 6rem;
 
 	@include respond(phone) {
-		font-size: 1.2rem;
+		margin: 1rem auto;
+		justify-content: center;
 	}
-}
-
-.main-header-v2 {
-	text-align: center;
-	font-family: 'Lobster', cursive;
 }
 
 .information {
 	@include flexCenter;
 
-	background-color: $color-blue;
-	color: white;
-	text-align: center;
-	width: 30%;
-	margin: 0 auto;
-	margin-top: 2rem;
 	padding: .3rem;
+	color: rgba(0, 0, 0, .7);
 	border-radius: .3rem;
-
-	@include respond(desktop) {
-		width: 60%;
-	}
 
 	@include respond(phone) {
 		width: 93%;
 		font-size: .8rem;
+		margin: 0;
 	}
 
 	span {
+		color: $color-blue;
 		font-size: 1.4rem;
 		margin-right: 1rem;
 	}
-}
-
-.design-element {
-	width: 50px;
-	height: 50px;
-	background-color: $color-pink;
-	border-radius: 50%;
-	color: white;
-	position: absolute;
-	bottom: -1.5rem;
-	z-index: -1000;
 }
 
 .members {
@@ -336,13 +259,17 @@ h1 {
 		}
 
 		@include respond(phone) {
-			font-size: 3.5rem;
+			font-size: 3rem;
 		}
 	}
 
 	&-header {
 		color: $color-pink;
 		font-size: 2.4rem;
+
+		@include respond(phone) {
+			font-size: 1.8rem;
+		}
 	}
 
 	&::after {
@@ -356,262 +283,240 @@ h1 {
 	}
 }
 
-.employees {
-	list-style: none;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
-	margin-block-start: 0;
-	padding-inline-start: 0;
-	width: 100%;
-	animation: fadeIn 2s linear;
+.employees-form__sortinggroup {
+	display: flex;
+	justify-content: center;
 
-	&-form {
+	@include respond(phone) {
+		align-items: center;
+	}
+
+	div {
+		display: flex;
+	}
+
+	select {
+		width: 18rem;
+		height: 2.37rem;
+		border: 1px solid rgba(0, 0, 0, .1);
+		color: rgba(0, 0, 0, .6);
+
+		&:focus {
+			outline: none;
+		}
+	}
+}
+
+.employee-table {
+	@include flexCenter;
+	flex-direction: column;
+	border-radius: 2rem;
+	width: 90%;
+	margin: 3rem auto;
+
+	@include respond(phone) {
+		width: 100%;
+	}
+
+	&__heading {
+		display: grid;
+		grid-template-columns: .4fr 1fr 1fr .5fr 1fr;
+		border-top-left-radius: 2rem;
+		border-top-right-radius: 2rem;
+		font-size: 1.1rem;
+		font-weight: 700;
+		color: rgba(0, 0, 0, .2);
+		border-bottom: 5px solid rgba(0, 0, 0, .03);
+
 		width: 100%;
 		padding: 1rem 0;
-		background: url("../../images/background.jpg");
-		background-position: center;
-		background-size: cover;
-		min-height: 40vh;
-		border-bottom: 4px solid $color-pink;
-		position: relative;
-		margin-bottom: 4rem;
-		backface-visibility: hidden;
 
 		@include respond(phone) {
-			min-height: 50vh;
+			display: none;
 		}
 
-		&--background {
+		& > * {
 			@include flexCenter;
-			@include absoluteCenter;
-
-			border-radius: 2rem;
-			padding: 3rem;
-			width: 50%;
-			flex-direction: column;
-			margin: 0 auto;
-			overflow: hidden;
-			bottom: -7rem;
-
-			@include respond(desktop) {
-				width: 100%;
-			}
-
-			@include respond(phone) {
-				bottom: -7.5rem;
-			}
-		}
-
-		&__sortinggroup {
-			display: flex;
-			justify-content: center;
-
-			@include respond(phone) {
-				flex-direction: column;
-			}
-
-			div {
-				display: flex;
-			}
-
-			select {
-				width: 18rem;
-				height: 2.37rem;
-				border: 1px solid rgba(0, 0, 0, .1);
-				color: rgba(0, 0, 0, .6);
-
-				&:focus {
-					outline: none;
-				}
-			}
-		}
-
-		&__filterline {
-			display: flex;
-			margin: .2rem auto;
-
-			&--index {
-				@include flexCenter;
-
-				margin-right: .5rem;
-				font-size: 1.1rem;
-				color: white;
-			}
-
-			input {
-				width: 18rem;
-				height: 2.1rem;
-				border: 1px solid rgba(0, 0, 0, .1);
-				border-left: 4px solid #2c5364;
-				border-top-right-radius: .5rem;
-				border-bottom-right-radius: .5rem;
-
-				&:focus {
-					outline: none;
-				}
-			}
-
-			select {
-				width: 18rem;
-				height: 2.37rem;
-				border: 1px solid rgba(0, 0, 0, .1);
-				color: rgba(0, 0, 0, .6);
-				border-top-left-radius: .5rem;
-				border-bottom-left-radius: .5rem;
-
-				&:focus {
-					outline: none;
-				}
-			}
 		}
 	}
 
-	.employee {
-		margin: 1rem;
-		margin-top: 8rem;
-		border-bottom: 1px solid rgba(0, 0, 0, .1);
-		display: flex;
-		flex-direction: column;
-		transition: all .4s ease;
-		background-color: white;
-		border-radius: 3rem;
-		backface-visibility: hidden;
-		box-shadow: .1rem .1rem 1rem rgba(0, 0, 0, .05);
+	&__employee {
+		display: grid;
+		grid-template-columns: .4fr 1fr 1fr .5fr 1fr;
+
+		width: 100%;
+		padding: 1rem 0;
+		transition: all .2s ease;
+		cursor: pointer;
 
 		@include respond(phone) {
-			margin: 0;
-			margin-top: 4rem;
-			border-radius: 0;
-			border-top: 5px solid rgba(0, 0, 0, .02);
-			border-bottom: 5px solid rgba(0, 0, 0, .02);
+			grid-template-columns: .4fr 1fr .4fr;
+			padding: 1rem 0;
+		}
+
+		&:not(:last-child) {
+			border-bottom: 1px solid rgba(0, 0, 0, .07);
+		}
+
+		& > * {
+			@include flexCenter;
 		}
 
 		&:hover {
-			border-bottom: 1px solid $color-pink;
-			transform: translateY(-1rem);
+			background-color: rgba(255, 242, 240, .7);
 		}
 
-		&__img {
-			width: 10rem;
-			height: 10rem;
-			@include flexCenter;
+		&--avatar {
+			width: 5rem;
+			height: 5rem;
 			margin: 0 auto;
-			margin-bottom: 0.5rem;
-			position: relative;
-			top: -2.5rem;
 
 			@include respond(phone) {
-				margin-bottom: -1.4rem;
+				width: 4rem;
+				height: 4rem;
 			}
 
-			& > img {
-				background-size: contain;
-				background-position: center;
-				width: 10rem;
-				height: 10rem;
+			img {
+				width: 5rem;
+				height: 5rem;
 				border-radius: 50%;
-				padding: 1rem;
+				border: 3px solid rgb(236, 206, 201);
+
+				@include respond(phone) {
+					width: 4rem;
+					height: 4rem;
+					margin-left: .5rem;
+					border: 1px solid rgb(236, 206, 201);
+				}
 			}
 		}
 
-		&__head {
-			color: $color-pink;
-			font-weight: 700;
-			font-size: 1.4rem;
-			padding: .1rem;
-			text-align: center;
-			text-transform: capitalize;
+		&--credentials {
+			flex-direction: column;
 
 			@include respond(phone) {
-				font-size: 1.2rem;
+				font-size: .9rem;
 			}
 		}
 
-		&__bottom {
+		&--name {
+			font-size: 1.4rem;
+			color: $color-pink;
+
+			@include respond(phone) {
+				font-size: 1.1rem;
+			}
+		}
+
+		&--jobtitle {
+			color: rgba(0, 0, 0, .6);
+		}
+
+		&--department {
+			color: rgb(236, 206, 201);
+			text-transform: uppercase;
+			font-size: 1.2rem;
 			display: flex;
 			flex-direction: column;
-			padding: 1rem;
-			align-items: flex-start;
-			margin: 0 auto;
 
-			&--links {
-				display: flex;
-				justify-content: space-evenly;
-				margin-top: .5rem;
-
-				& > * {
-					margin-right: 1rem;
-				}
-
-				.btn-delete {
-					border: none;
-					background-color: $color-cancel;
-					border-radius: .2rem;
-					color: white;
-					opacity: .7;
-					transition: all .3s ease;
-					cursor: pointer;
-
-					&:hover {
-						opacity: 1;
-					}
-				}
-			}
-
-			div span:first-child {
-				i {
-					font-size: 1.2rem;
-					background-color: #ee73a0;
-					color: white;
-					padding: .3rem;
-					margin-right: .5rem;
-					margin-bottom: .3rem;
-				}
-			}
-
-			div span:last-child {
-				color: rgba(0, 0, 0, 0.7);
-			}
-
-			hr {
-				width: 100%;
-				background-color: rgba(0, 0, 0, .01);
-			}
-
-			&--info {
-				text-align: right;
-
-				&-experience {
-					color: rgba(0, 0, 0, .6);
-					font-size: 0.9rem;
-				}
-
-				&-department {
-					background-color: $color-pink;
-					color: white;
-					display: inline-block;
-					padding: 0.2rem 0.2rem;
-					margin: .2rem 0;
-					text-align: center;
-				}
-
-				&-link {
-					@include flexCenter;
-					text-decoration: none;
-					background-color: $color-pink;
-					padding: .2rem .7rem;
-					margin-top: .2rem;
-					border-radius: .2rem;
-
-					&:link {
-						color: white;
-					}
-
-					&:visited {
-						color: white;
-					}
-				}
+			@include respond(phone) {
+				font-size: .8rem;
 			}
 		}
+
+		&--location {
+			color: rgba(0, 0, 0, .5);
+		}
+
+		&--email {
+			color: rgba(0, 0, 0, .7);
+
+			@include respond(phone) {
+				display: none;
+			}
+		}
+
+		&--available,
+		&--out {
+			@include flexCenter;
+
+			span:first-child {
+				width: .6rem;
+				height: .6rem;
+				border-radius: 50%;
+				margin-right: .6rem;
+			}
+
+			@include respond(phone) {
+				display: none;
+			}
+		}
+
+		&--available {
+			span {
+				color: $color-success;
+			}
+
+			span:first-child {
+				background-color: $color-success;
+			}
+		}
+
+		&--out {
+			span {
+				color: $color-error;
+			}
+
+			span:first-child {
+				background-color: $color-error;
+			}
+		}
+
+		&--more {
+			display: flex;
+			align-items: center;
+		}
+
+		&--link {
+			text-decoration: none;
+			color: $color-pink;
+			text-transform: uppercase;
+			transition: all .2s ease;
+			font-size: 1.5rem;
+			font-weight: 700;
+
+			@include respond(phone) {
+				display: none;
+			}
+		}
+
+		&--delete {
+			background-color: transparent;
+			color: $color-error;
+			box-shadow: none;
+			font-size: 1.5rem;
+			font-weight: 900;
+
+			@include respond(phone) {
+				padding: .4rem;
+			}
+		}
+	}
+}
+
+.floating-arrow {
+	position: fixed;
+	bottom: 1rem;
+	left: 48%;
+	z-index: 5000;
+	cursor: pointer;
+	user-select: none;
+
+	font-size: 3rem;
+	color: $color-pink;
+	animation: float 3s ease-in-out infinite;
+
+	&:focus {
+		outline: none;
 	}
 }
