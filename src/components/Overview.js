@@ -1,9 +1,6 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
-import $ from "jquery";
-
-const Departments = ["Human Resources", "Sales", "Marketing", "Legal", "Services", "Research and Development", "Product Management", "Training", "Support", "Engineering", "Accounting", "Business Development"];
 
 export default class Overview extends React.Component {
     constructor(props) {
@@ -19,7 +16,8 @@ export default class Overview extends React.Component {
             currentSorting: "ASC",
             successOnDeletion: "",
             isComponentLoaded: false,
-            isArrowVisible: false
+            isArrowVisible: false,
+            Departments: []
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -34,6 +32,19 @@ export default class Overview extends React.Component {
         document.addEventListener("scroll", function(event) {
             scroll.toggleVisibility();
         })
+
+        serverAPI("GET", "department/get.php")
+            .then((departments) => {
+                let departmentNames = [];
+                for (let i = 0; i < departments.data.length; i++) {
+                    if ( departments.data[i].name !== "" ) {
+                        departmentNames.push(departments.data[i].name);
+                    }
+                }
+                
+                this.setState({ Departments: departmentNames });
+            })
+            .catch((error) => this.setState({error}))
 
         serverAPI("GET", "get.php")
             .then(employees => {
@@ -121,7 +132,7 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isArrowVisible } = this.state;
+        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isArrowVisible, Departments } = this.state;
         
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
@@ -211,7 +222,7 @@ export default class Overview extends React.Component {
                     </div>
                 </form>
 
-                <div class="extra-information">
+                <div className="extra-information">
                     <div className="information">
                         <span><i className="fas fa-info-circle"></i></span>{ employees.length } members found
                     </div>

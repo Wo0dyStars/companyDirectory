@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `department` (
   `name` varchar(50) DEFAULT NULL,
   `locationID` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table companydirectory.department: ~12 rows (approximately)
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table companydirectory.location: ~4 rows (approximately)
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;

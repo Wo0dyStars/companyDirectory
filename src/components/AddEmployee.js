@@ -2,15 +2,13 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 
-const Departments = ["Human Resources", "Sales", "Marketing", "Legal", "Services", "Research and Development", "Product Management", "Training", "Support", "Engineering", "Accounting", "Business Development"];
-
 export default class AddEmployee extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             errorLoading: null,
-            isLoaded: true,
+            isLoaded: false,
             firstName: "",
             lastName: "",
             email: "",
@@ -22,7 +20,8 @@ export default class AddEmployee extends React.Component {
             avatar: "",
             error: "",
             success: "",
-            isComponentLoaded: false
+            isComponentLoaded: false,
+            Departments: []
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -31,6 +30,19 @@ export default class AddEmployee extends React.Component {
 
     componentDidMount() {
         setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
+
+        serverAPI("GET", "department/get.php")
+            .then((departments) => {
+                let departmentNames = [];
+                for (let i = 0; i < departments.data.length; i++) {
+                    if ( departments.data[i].name !== "" ) {
+                        departmentNames.push(departments.data[i].name);
+                    }
+                }
+                
+                this.setState({ Departments: departmentNames, isLoaded: true });
+            })
+            .catch((error) => this.setState({error, isLoaded: true}))
     }
 
     handleChange = (event) => {
@@ -57,7 +69,7 @@ export default class AddEmployee extends React.Component {
     }
 
     render() {
-        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
+        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, Departments, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
 
         if ( errorLoading ) {
             return <div>Error: {errorLoading.message}</div>
