@@ -1,6 +1,7 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import { goToTop } from 'react-scrollable-anchor';
 
 export default class Overview extends React.Component {
     constructor(props) {
@@ -60,10 +61,6 @@ export default class Overview extends React.Component {
         if ( window.pageYOffset > 300 ) {
             this.setState({ isArrowVisible: true });
         } else { this.setState({ isArrowVisible: false }) };
-    }
-
-    scrollToTop() {
-        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     handleChange = (event) => {
@@ -192,9 +189,9 @@ export default class Overview extends React.Component {
 
         return (
             <div className="employees-container">
-
+                
                 { isArrowVisible && (
-                    <div onClick={() => this.scrollToTop()} className="floating-arrow"><i className="fas fa-angle-double-up"></i></div>
+                    <div onClick={() => {goToTop()}} className="floating-arrow"><i className="fas fa-angle-double-up"></i></div>
                 ) }
 
                 <div className="members">
