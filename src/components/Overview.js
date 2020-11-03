@@ -214,10 +214,10 @@ export default class Overview extends React.Component {
                         
                         <div className="sorter--sortby">
                             <input key="sortby1" type="radio" id="sortby1" name="sortby" checked={ "ASC" === currentSorting } value="ASC" onChange={this.handleChangeSorting}/>
-                            <label htmlFor="sortby1" className="sorter--sortby__asc"><i className="fas fa-sort-up"></i></label>
+                            <label htmlFor="sortby1" className="sorter--sortby__asc"><i className="fas fa-long-arrow-alt-up"></i></label>
 
                             <input key="sortby2" type="radio" id="sortby2" name="sortby" checked={ "DESC" === currentSorting } value="DESC" onChange={this.handleChangeSorting}/>
-                            <label htmlFor="sortby2" className="sorter--sortby__desc"><i className="fas fa-sort-down"></i></label>
+                            <label htmlFor="sortby2" className="sorter--sortby__desc"><i className="fas fa-long-arrow-alt-down"></i></label>
                         </div>
                     </div>
                 </form>
