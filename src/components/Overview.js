@@ -2,6 +2,9 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { goToTop } from 'react-scrollable-anchor';
+// import SwipeToDelete from 'react-swipe-to-delete-component';
+// import Swipeable from "./Swipeable";
+import SwipeToDelete from 'react-swipe-to-delete-ios';
 
 export default class Overview extends React.Component {
     constructor(props) {
@@ -11,6 +14,7 @@ export default class Overview extends React.Component {
             error: null,
             isLoaded: false,
             employees: [],
+            searchedEmployees: [],
             filters: [],
             sorters: [["name", "p.firstName"], ["email", "p.email"], ["department", "d.name"], ["location", "l.name"]],
             currentSorter: "p.firstName",
@@ -18,7 +22,8 @@ export default class Overview extends React.Component {
             successOnDeletion: "",
             isComponentLoaded: false,
             isArrowVisible: false,
-            Departments: []
+            Departments: [],
+            typing: ""
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -26,6 +31,8 @@ export default class Overview extends React.Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.handleChangeSorter = this.handleChangeSorter.bind(this);
         this.handleChangeSorting = this.handleChangeSorting.bind(this);
+        this.handleType = this.handleType.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
 
     componentDidMount() {
@@ -47,9 +54,9 @@ export default class Overview extends React.Component {
             })
             .catch((error) => this.setState({error}))
 
-        serverAPI("GET", "get.php")
+        serverAPI("GET", "get.php?orderby=p.firstName")
             .then(employees => {
-                this.setState({ isLoaded: true, employees: employees.data });
+                this.setState({ isLoaded: true, employees: employees.data, searchedEmployees: employees.data });
                 setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
             })
             .catch((error) => {
@@ -93,14 +100,15 @@ export default class Overview extends React.Component {
         this.setState({ currentSorting: event.target.value });
     }
 
-    handleDelete = (event) => {
-
+    handleDelete = (employeeID) => {
+        
         this.setState({ isLoaded: false });
-        serverAPI("POST", "delete.php", JSON.stringify({id: event.target.value}))
+        serverAPI("POST", "delete.php", JSON.stringify({id: employeeID}))
         .then(() => {
-            const person = this.state.employees.filter(employee => employee.id === event.target.value)[0];
+            const person = this.state.employees.filter(employee => employee.id === employeeID)[0];
             const personName = person.firstName + " " + person.lastName;
-            this.setState({ employees: this.state.employees.filter(employee => employee.id !== event.target.value),
+            this.setState({ employees: this.state.employees.filter(employee => employee.id !== employeeID),
+                            searchedEmployees: this.state.searchedEmployees.filter(employee => employee.id !== employeeID),
                             isLoaded: true,
                             successOnDeletion: `You have now successfully deleted ${personName} from your directory.` });
         })
@@ -124,16 +132,54 @@ export default class Overview extends React.Component {
             .catch((error) => this.setState({ isLoaded: true, error }));
     }
 
+    handleType = (event) => {
+        this.setState({ typing: event.target.value });
+
+        let filteredEmployees = this.state.employees.filter(employee => {
+            const { firstName, lastName, jobTitle, department, email, location, expertise } = employee;
+            const searchedKeys = [ firstName, lastName, jobTitle, department, email, location, expertise ];
+            
+            return searchedKeys.join(" ").toLowerCase().indexOf(event.target.value) !== -1;
+        });
+        
+        this.setState({ searchedEmployees: filteredEmployees });
+    }
+
+    onDelete = () => {
+        console.log("on delete...");
+        // console.log(id);
+        // this.setState({ searchedEmployees: this.state.searchedEmployees.filter(employee => employee.id !== id) });
+    }
+
     componentDidUpdate() {
         setTimeout(() => this.setState({successOnDeletion: ""}), 7500);
     }
 
     render() {
-        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, isArrowVisible, Departments } = this.state;
+        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, searchedEmployees, typing,  isArrowVisible, Departments } = this.state;
         
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
         ))
+
+        const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXZ".split("");
+        console.log(ABC);
+        let ABCList = (
+            <div className="ABCLetter">
+                { ABC.map(letter => (
+                    <div>{letter}</div>
+                )) }
+            </div>);
+        
+
+        let employeesGrouped = searchedEmployees.reduce((employees, currentEmployee) => {
+            let currentGroup = currentEmployee.firstName[0];
+
+            if ( !employees[currentGroup] ) employees[currentGroup] = { currentGroup, employees: [ currentEmployee ] }
+            else { employees[currentGroup].employees.push(currentEmployee) }
+
+            return employees;
+        }, {})
 
        
         let filterInput = (
@@ -199,6 +245,11 @@ export default class Overview extends React.Component {
                     <h1 className="members-header">Members Directory</h1>
                 </div>
 
+                <div className="filters_">
+                    <span><i className="fas fa-search"></i></span>
+                    <input type="text" name="search" value={typing} placeholder="Search" onChange={this.handleType} />
+                </div>
+
                 {successMessage}
 
                 <form onSubmit={this.handleSubmit}>
@@ -221,7 +272,7 @@ export default class Overview extends React.Component {
 
                 <div className="extra-information">
                     <div className="information">
-                        <span><i className="fas fa-info-circle"></i></span>{ employees.length } members found
+                        <span><i className="fas fa-info-circle"></i></span>{ searchedEmployees.length } members found
                     </div>
 
                     <Link to="/employee/new" className="routerLink">
@@ -237,52 +288,60 @@ export default class Overview extends React.Component {
                         <div>Name</div>
                         <div>Email Address</div>
                         <div>Availability</div>
-                        <div></div>
                     </div>
+                    
+                    <div className="employees-section">
+                        <div className="ABC-list">{ ABCList }</div>
 
-                    { employees.map((employee, index) => (
-                        <div key={`${employee.firstName}-${index}`} className="employee-table__employee">
-                            <div className="employee-table__employee--avatar">
-                                <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
-                            </div>
-
-                            <div className="employee-table__employee--credentials">
-                                <Link to={`/employee/${employee.id}`} style={{textDecoration: "none"}}>
-                                    <div className="employee-table__employee--name">
-                                        {employee.firstName} {employee.lastName}
-                                    </div>
-                                </Link>
+                        { Object.entries(employeesGrouped).map(([group, employees]) => (
+                            <div>
+                                <div className="employee-table__groupLetter">{ group }</div>
+                                <div>
+                                    { employees.employees.map((employee) => (
+                                        <SwipeToDelete key={employee.id} height={100} onDelete={() => this.handleDelete(employee.id)} className="employee-table__employee">
                                 
-                                <div className="employee-table__employee--department"> 
-                                    { employee.department }
-                                </div>
-                                <div className="employee-table__employee--location"> 
-                                    { employee.location }
+                                            <div className="employee-table__employee--avatar">
+                                                <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
+                                            </div>
+                
+                                            <div className="employee-table__employee--credentials">
+                                                <Link to={`/employee/${employee.id}`} style={{textDecoration: "none"}}>
+                                                    <div className="employee-table__employee--name">
+                                                        {employee.firstName} {employee.lastName} <span><i className="fas fa-external-link-alt"></i></span>
+                                                    </div>
+                                                </Link>
+                                                
+                                                <div className="employee-table__employee--department"> 
+                                                    { employee.department }
+                                                </div>
+                                                <div className="employee-table__employee--location"> 
+                                                    { employee.location }
+                                                </div>
+                                            </div>
+                
+                                            <div className="employee-table__employee--email">
+                                                { employee.email }
+                                            </div>
+                
+                                            { employee.isAvailable ? (
+                                                <div className="employee-table__employee--available">
+                                                    <span></span>
+                                                    <span>Available</span>
+                                                </div>
+                                            ) : (
+                                                <div className="employee-table__employee--out">
+                                                    <span></span>
+                                                    <span>Out</span>
+                                                </div>
+                                            ) }
+                                        </SwipeToDelete>
+                                    )) }
                                 </div>
                             </div>
-
-                            <div className="employee-table__employee--email">
-                                { employee.email }
-                            </div>
-
-                            { employee.isAvailable ? (
-                                <div className="employee-table__employee--available">
-                                    <span></span>
-                                    <span>Available</span>
-                                </div>
-                            ) : (
-                                <div className="employee-table__employee--out">
-                                    <span></span>
-                                    <span>Out</span>
-                                </div>
-                            ) }
-
-                            <div className="employee-table__employee--more">
-                                <Link to={`/employee/${employee.id}`} className="employee-table__employee--link"><span><i className="fas fa-external-link-alt"></i></span></Link>
-                                <button className="btn employee-table__employee--delete" value={employee.id} type="button" onClick={this.handleDelete}>X</button>
-                            </div>
-                        </div>
-                    )) }
+                            
+                        )) }
+                    </div>
+                    
                 </article>
             </div>
         )

@@ -79,6 +79,8 @@ class Employee extends React.Component {
 
     render() {
         const { error, isLoaded, employee, editEmployee, isEditing, successOnSave, isComponentLoaded } = this.state;
+
+        console.log(this.props);
         
         let successMessage = <div></div>;
         if ( successOnSave ) {
