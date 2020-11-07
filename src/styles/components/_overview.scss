@@ -29,6 +29,7 @@
 	margin-top: 3rem;
 	background-color: rgba(255, 242, 240, 1);
 	border-radius: 3rem;
+	margin-left: .1rem;
 
 	@include respond(phone) {
 		justify-content: flex-start;
@@ -64,8 +65,7 @@
 		width: 100%;
 		font-size: 1.2rem;
 		text-align: left;
-		margin-left: .2rem;
-		background-color: rgba(255, 242, 240, 1);
+		margin-left: .5rem;
 		color: rgba(0, 0, 0, .6);
 		font-weight: 600;
 		padding: 1rem;
@@ -643,6 +643,8 @@
 	justify-content: flex-start;
 	z-index: 30000;
 	position: fixed;
+	width: 100%;
+	padding-right: .5rem;
 
 	.modal-button {
 		width: 2.5rem;
@@ -740,18 +742,20 @@
 
 .menu {
 	&:nth-child(1) {
-		top: -10rem;
+		top: -20rem;
+		left: -10rem;
 		transition-delay: 0s;
 	}
 
 	&:nth-child(2) {
-		top: 0;
-		left: 0;
+		top: -10rem;
+		left: 30rem;
 		transition-delay: 0.1s;
 	}
 
 	&:nth-child(3) {
-		top: 0;
+		top: 30rem;
+		left: -15rem;
 		transition-delay: 0.2s;
 		background: linear-gradient(to right, #414d0b, #727a17);
 	}
@@ -784,10 +788,10 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background-color: rgba(255, 242, 240, 1);
+	background-color: #182848;
 	z-index: -2000;
 	opacity: 0;
-	transition: all .7s ease;
+	transition: all .3s linear;
 	overflow: hidden;
 	visibility: hidden;
 }
@@ -809,6 +813,7 @@
 
 	&:nth-child(1) {
 		top: 0;
+		left: 0;
 		opacity: 1;
 	}
 
@@ -820,6 +825,7 @@
 
 	&:nth-child(3) {
 		top: 20rem;
+		left: 0rem;
 		opacity: 1;
 	}
 }
