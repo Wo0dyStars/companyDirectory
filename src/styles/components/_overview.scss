@@ -650,6 +650,7 @@
 		font-size: 2rem;
 		color: white;
 		margin-left: .5rem;
+		cursor: pointer;
 	}
 
 	&-background {
@@ -667,7 +668,6 @@
 
 .modal {
 	width: 100vw;
-	overflow-y: hidden;
 	z-index: 35000;
 }
 
@@ -676,7 +676,6 @@
 	height: 8rem;
 	border-radius: .7rem;
 	position: fixed;
-	overflow: hidden;
 	cursor: pointer;
 
 	background: linear-gradient(to right, #d66d75, #e29587);
