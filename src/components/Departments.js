@@ -33,7 +33,6 @@ export default class Departments extends React.Component {
     componentDidMount() {
         serverAPI("GET", "/department/get.php")
             .then(departments => {
-
                 serverAPI("GET", "/location/get.php")
                     .then(locations => {
                         serverAPI("GET", "/get.php")
@@ -43,13 +42,16 @@ export default class Departments extends React.Component {
                             const currentValues = [];
                             for (let i = 0; i < departments.data.length; i++) {
                                 const employeeList = employees.data.filter(employee => employee.department === departments.data[i].name);
-    
+                                
                                 isEditing.push({ id: departments.data[i].id, edit: false });
                                 currentValues.push({ id: departments.data[i].id, locationID: "select", value: "" });
-                                const locationName = locations.data.filter(l => l.id === departments.data[i].locationID)[0].name;
+                                const locationNameRaw = locations.data.filter(l => l.id === departments.data[i].locationID)[0];
+                                const locationName = locationNameRaw ? locationNameRaw.name : "";
+                                
                                 departmentsFinal.push({ id: departments.data[i].id, name: departments.data[i].name, location: { id: departments.data[i].locationID, name: locationName}, employees: employeeList.length });
+                                
                             }
-                           
+                            console.log("final", departmentsFinal);
                             this.setState({ isLoaded: true, departmentsFinal, isEditing, currentValues, locations: locations.data });
                         })
                         .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading departments" }))

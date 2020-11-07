@@ -11,6 +11,10 @@ html {
 	scroll-behavior: smooth;
 }
 
+html::-webkit-scrollbar {
+	width: 0;
+}
+
 body {
 	box-sizing: border-box;
 	overflow-y: scroll;

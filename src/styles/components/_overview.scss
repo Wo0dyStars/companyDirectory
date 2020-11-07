@@ -675,7 +675,7 @@
 	width: 20rem;
 	height: 8rem;
 	border-radius: .7rem;
-	position: absolute;
+	position: fixed;
 	overflow: hidden;
 	cursor: pointer;
 
@@ -767,11 +767,11 @@
 #checkbox-items {
 	width: 20rem;
 	height: 30rem;
-	position: absolute;
+	position: fixed;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 20000;
+	z-index: 35000;
 	visibility: hidden;
 }
 
@@ -790,20 +790,22 @@
 	opacity: 0;
 	transition: all .7s ease;
 	overflow: hidden;
+	visibility: hidden;
 }
 
 #modal-checkbox:checked ~ .overlay {
 	opacity: 1;
-	z-index: 15000;
+	z-index: 16000;
+	visibility: visible;
 }
 
 #modal-checkbox:checked ~ #checkbox-items {
-	z-index: 20000;
+	z-index: 35000;
 	visibility: visible;
 }
 
 #modal-checkbox:checked ~ #checkbox-items .menu {
-	z-index: 20000;
+	z-index: 35000;
 	visibility: visible;
 
 	&:nth-child(1) {
