@@ -23,19 +23,17 @@ class Employee extends React.Component {
         this.toggleEdit = this.toggleEdit.bind(this);
     }
 
+    componentWillMount() {
+        window.scrollTo(0, 0);
+    }
+
     componentDidMount() {
-        const userIndex = this.props.match.params.index;
-        serverAPI("GET", `get.php?id=${userIndex}`)
-            .then((foundEmployee) => {
-                this.setState({
-                    isLoaded: true,
-                    employee: foundEmployee.data[0],
-                    editEmployee: foundEmployee.data[0]
-                });
-                
-                setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
-            })
-            .catch((error) => this.setState({ isLoaded: true, error, isComponentLoaded: true }));
+        this.setState({
+            employee: this.props.location.state.employee, 
+            editEmployee: this.props.location.state.employee,
+            isLoaded: true });
+        
+        setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
     }
 
     handleChange = (event) => {
@@ -80,8 +78,6 @@ class Employee extends React.Component {
     render() {
         const { error, isLoaded, employee, editEmployee, isEditing, successOnSave, isComponentLoaded } = this.state;
 
-        console.log(this.props);
-        
         let successMessage = <div></div>;
         if ( successOnSave ) {
             successMessage = (
@@ -137,23 +133,30 @@ class Employee extends React.Component {
 
                     <div className="employee__header">
                         <div className="controls">
-                            <Link to="/" className="routerLink">
+                            { isEditing ? (
                                 <div>
-                                    <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
-                                </div>
-                            </Link>
+                                    <button className="cancel" type="button" onClick={this.handleCancel}>Cancel</button>
+                                </div> 
+                            ) : (
+                                <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="home-link">
+                                    
+                                        <div className="home-link--icon"><i className="fas fa-chevron-left"></i></div>
+                                        <div className="home-link--text">employees</div>
+                                   
+                                </Link>
+                            )}
+                            
 
                             <div className="edit-controls">
                                 { isEditing ? 
                                     ( 
                                         <div>
-                                            <button className="btn btn-cancel mg-small" type="button" onClick={this.handleCancel}>Cancel</button>
-                                            <button className="btn btn-save mg-small" type="button" onClick={this.handleSave}>Save updates</button>
+                                            <button className="save" type="button" onClick={this.handleSave}>Save</button>
                                         </div> 
                                     ) : 
                                     (
                                         <div>
-                                            <button className="btn btn-edit mg-small" type="button" onClick={this.toggleEdit}>Edit</button>
+                                            <button className="edit" type="button" onClick={this.toggleEdit}>Edit</button>
                                         </div>
                                     )
                                 }
@@ -173,7 +176,7 @@ class Employee extends React.Component {
                             <div className="employee__header--middle-employeeID"> Employee ID: { editEmployee.id } </div>
                             <div className="employee__header--middle-available"> { isAvailable } </div>
                             <div className="employee__header--right-phone"> <span><i className="fas fa-phone-volume"></i></span> { editEmployee.phone } </div>
-                            <div className="employee__header--right-email"> <span><i className="fas fa-at"></i></span> { editEmployee.email } </div>
+                            <div className="employee__header--right-email"> <span><i className="fas fa-envelope"></i></span> { editEmployee.email } </div>
                         </div>
                     </div>
 
@@ -191,12 +194,14 @@ class Employee extends React.Component {
 
                                 <div className="employee-section__inputs">
                                     <div>
-                                        <label htmlFor="name">Full Name</label>
-                                        { fields.name }
+                                        <div className="icon"><i className="fas fa-user"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="name">Full Name</label>
+                                            { fields.name }
+                                        </div>
                                     </div>
 
                                     <div className="biography">
-                                        <div className="quotemark">"</div>
                                         <label htmlFor="biography">Biography</label>
                                         { fields.biography }
                                     </div>
@@ -215,26 +220,34 @@ class Employee extends React.Component {
 
                                 <div className="employee-section__inputs">
                                     <div>
-                                        <label htmlFor="jobTitle">Job Title</label>
-                                        { fields.jobTitle }
+                                        <div className="icon"><i className="fas fa-briefcase"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="jobTitle">Job Title</label>
+                                            { fields.jobTitle }
+                                        </div>
+                                        
                                     </div>
 
                                     <div>
-                                        <label htmlFor="experience">Experience</label>
-                                        { fields.experience }
+                                        <div className="icon"><i className="fas fa-user-cog"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="experience">Experience</label>
+                                            { fields.experience }
+                                        </div>
+                                       
                                     </div>
 
                                     <div>
-                                        Please list your skills separated by a comma
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="expertise">Expertise</label>
-                                        { fields.expertise }
+                                        <div className="icon"><i className="fab fa-buromobelexperte"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="expertise">Expertise</label>
+                                            { fields.expertise }
+                                        </div>
+                                        
                                     </div>
 
                                     { editEmployee.expertise ? (
-                                        <div className="skillset">
+                                        <div id="skillset">
                                             { skillsDisplay }
                                         </div>
                                     ) : <div></div>}
@@ -253,18 +266,30 @@ class Employee extends React.Component {
 
                                 <div className="employee-section__inputs">
                                     <div>
-                                        <label htmlFor="email">Email</label>
-                                        { fields.email }
+                                        <div className="icon"><i className="fas fa-envelope"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="email">Email</label>
+                                            { fields.email }
+                                        </div>
+                                       
                                     </div>
 
                                     <div>
-                                        <label htmlFor="phone">Phone</label>
-                                        { fields.phone }
+                                        <div className="icon"><i className="fas fa-phone-volume"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="phone">Phone</label>
+                                            { fields.phone }
+                                        </div>
+                                        
                                     </div>
 
                                     <div>
-                                        <label htmlFor="location">Location</label>
-                                        { fields.location }
+                                        <div className="icon"><i className="fas fa-globe-europe"></i></div>
+                                        <div className="field">
+                                            <label htmlFor="location">Location</label>
+                                            { fields.location }
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </header>

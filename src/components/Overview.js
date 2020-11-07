@@ -23,7 +23,9 @@ export default class Overview extends React.Component {
             isComponentLoaded: false,
             isArrowVisible: false,
             Departments: [],
-            typing: ""
+            typing: "",
+            isModalOpen: false,
+            isSearching: false
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -32,7 +34,10 @@ export default class Overview extends React.Component {
         this.handleChangeSorter = this.handleChangeSorter.bind(this);
         this.handleChangeSorting = this.handleChangeSorting.bind(this);
         this.handleType = this.handleType.bind(this);
-        this.onDelete = this.onDelete.bind(this);
+        this.modal = this.modal.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+
     }
 
     componentDidMount() {
@@ -41,20 +46,20 @@ export default class Overview extends React.Component {
             scroll.toggleVisibility();
         })
 
-        serverAPI("GET", "department/get.php")
-            .then((departments) => {
-                let departmentNames = [];
-                for (let i = 0; i < departments.data.length; i++) {
-                    if ( departments.data[i].name !== "" ) {
-                        departmentNames.push(departments.data[i].name);
-                    }
+        if ( this.props.location.state ) {
+            console.log("currentstate: ",this.props.location.state);
+            this.setState({ employees: this.props.location.state.employees, typing: this.props.location.state.typing, searchedEmployees: this.props.location.state.searched, Departments: this.props.location.state.Departments, isLoaded: true });
+        } else {
+            serverAPI("GET", "department/get.php")
+            .then(departments => {
+                const allDepartments = [];
+                for (let [key, department] of Object.entries(departments.data)) {
+                    allDepartments.push(department.name);
                 }
-                
-                this.setState({ Departments: departmentNames });
+                this.setState({Departments: allDepartments});
             })
-            .catch((error) => this.setState({error}))
 
-        serverAPI("GET", "get.php?orderby=p.firstName")
+            serverAPI("GET", "get.php?orderby=p.firstName")
             .then(employees => {
                 this.setState({ isLoaded: true, employees: employees.data, searchedEmployees: employees.data });
                 setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
@@ -62,6 +67,19 @@ export default class Overview extends React.Component {
             .catch((error) => {
                 this.setState({ isLoaded: true, error })
             });
+        }
+    }
+
+    modal = (event) => {
+
+    }
+
+    openModal = (event) => {
+        this.setState({ isModalOpen: !this.state.isModalOpen });
+    }
+
+    closeModal = (event) => {
+        this.setState({ isModalOpen: false });
     }
 
     toggleVisibility() {
@@ -133,8 +151,10 @@ export default class Overview extends React.Component {
     }
 
     handleType = (event) => {
+        console.log("typing now: ", this.state.typing);
         this.setState({ typing: event.target.value });
 
+        console.log("currentemployees: ",this.state.employees);
         let filteredEmployees = this.state.employees.filter(employee => {
             const { firstName, lastName, jobTitle, department, email, location, expertise } = employee;
             const searchedKeys = [ firstName, lastName, jobTitle, department, email, location, expertise ];
@@ -145,42 +165,34 @@ export default class Overview extends React.Component {
         this.setState({ searchedEmployees: filteredEmployees });
     }
 
-    onDelete = () => {
-        console.log("on delete...");
-        // console.log(id);
-        // this.setState({ searchedEmployees: this.state.searchedEmployees.filter(employee => employee.id !== id) });
-    }
-
     componentDidUpdate() {
         setTimeout(() => this.setState({successOnDeletion: ""}), 7500);
     }
 
     render() {
-        const { error, isLoaded, employees, sorters, currentSorter, currentSorting, successOnDeletion, searchedEmployees, typing,  isArrowVisible, Departments } = this.state;
-        
+        const { error, isLoaded, employees, sorters, currentSorter, isModalOpen, currentSorting, Departments, successOnDeletion, searchedEmployees, typing,  isArrowVisible } = this.state;
+
         const departments = Departments.map((department, index) => (
             <option key={`${department}-${index}`} value={department}>{department}</option>
         ))
 
         const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXZ".split("");
-        console.log(ABC);
         let ABCList = (
             <div className="ABCLetter">
-                { ABC.map(letter => (
-                    <div>{letter}</div>
+                { ABC.map((letter, index) => (
+                    <div key={`letter-${index}`}>{letter}</div>
                 )) }
             </div>);
         
-
         let employeesGrouped = searchedEmployees.reduce((employees, currentEmployee) => {
-            let currentGroup = currentEmployee.firstName[0];
-
-            if ( !employees[currentGroup] ) employees[currentGroup] = { currentGroup, employees: [ currentEmployee ] }
-            else { employees[currentGroup].employees.push(currentEmployee) }
-
-            return employees;
+                let currentGroup = currentEmployee.firstName[0];
+    
+                if ( !employees[currentGroup] ) employees[currentGroup] = { currentGroup, employees: [ currentEmployee ] }
+                else { employees[currentGroup].employees.push(currentEmployee) }
+    
+                return employees;
         }, {})
-
+        
        
         let filterInput = (
             <div className="filters">
@@ -224,6 +236,8 @@ export default class Overview extends React.Component {
             </div>)
         }
 
+        console.log(isModalOpen);
+        console.log(this.state.isSearching);
         if ( error ) {
             return <div>Error: {error.message}</div>
         } else if (!isLoaded) {
@@ -245,10 +259,56 @@ export default class Overview extends React.Component {
                     <h1 className="members-header">Members Directory</h1>
                 </div>
 
-                <div className="filters_">
-                    <span><i className="fas fa-search"></i></span>
-                    <input type="text" name="search" value={typing} placeholder="Search" onChange={this.handleType} />
+                <div id="controls">
+                    <div id="controls-background"></div>
+
+                    <div className={this.state.isSearching ? "filters_ filters_-searching" : "filters_"}>
+                        <span onClick={() => this.setState({isSearching: !this.state.isSearching})}><i className="fas fa-search"></i></span>
+                        <input type="text" name="search" value={typing} placeholder="Search" onChange={this.handleType} />
+                    </div>
+
+                    <div className="modal-button" onClick={this.openModal}>
+                        <i className="fas fa-cogs"></i>
+                    </div>
+                        
                 </div>
+
+                <div className={isModalOpen ? "modal" : ""}>
+                        <input type="checkbox" id="modal-checkbox" checked={isModalOpen} onChange={this.openModal} />
+                        <div className="overlay" onClick={this.openModal}></div>
+                        <div id="checkbox-items">
+                            <div className="menu">
+                                <Link className="menu-link" to={{pathname:"/locations", state: {employees, typing, searched: searchedEmployees, Departments} }}>
+                                    <div id="menu-background-1" className="menu-background"></div>
+                                    <i className="fas fa-globe"></i>
+                                    <div>Locations</div>
+                                    <p>
+                                        Recently relocated or established a new office? Do not forget to update your locations.
+                                    </p>
+                                </Link>
+                            </div>
+                            <div className="menu">
+                                <Link className="menu-link" to={{pathname:"/departments", state: {employees, typing, searched: searchedEmployees, Departments} }}>
+                                    <div id="menu-background-2" className="menu-background"></div>
+                                    <i className="fas fa-building"></i>
+                                    <div>Departments</div>
+                                    <p>
+                                        Recently relocated or established a new office? Do not forget to update your locations.
+                                    </p>
+                                </Link>
+                            </div>
+                            <div className="menu">
+                                <Link className="menu-link" to={{pathname:"/employee/new", state: {employees, typing, searched: searchedEmployees, Departments} }}>
+                                    <div id="menu-background-3" className="menu-background"></div>
+                                    <i className="fas fa-user-plus"></i>
+                                    <div>New Member</div>
+                                    <p>
+                                        Recently relocated or established a new office? Do not forget to update your locations.
+                                    </p>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
 
                 {successMessage}
 
@@ -275,14 +335,14 @@ export default class Overview extends React.Component {
                         <span><i className="fas fa-info-circle"></i></span>{ searchedEmployees.length } members found
                     </div>
 
-                    <Link to="/employee/new" className="routerLink">
+                    <Link to={{pathname:"/employee/new", state: {employees, typing, searched: searchedEmployees, Departments} }} className="routerLink">
                         <div>
                             <div className="routerLink--icon"><i className="fas fa-user-plus"></i></div>
                         </div>
                     </Link>
                 </div>
 
-                <article className="employee-table">
+                <article className={isModalOpen ? "employee-table-hide" : "employee-table"}>
                     <div className="employee-table__heading">
                         <div>Photo</div>
                         <div>Name</div>
@@ -293,19 +353,19 @@ export default class Overview extends React.Component {
                     <div className="employees-section">
                         <div className="ABC-list">{ ABCList }</div>
 
-                        { Object.entries(employeesGrouped).map(([group, employees]) => (
-                            <div>
+                        { Object.entries(employeesGrouped).map(([group, employeesGroup], index) => (
+                            <div key={`group-${index}`}>
                                 <div className="employee-table__groupLetter">{ group }</div>
                                 <div>
-                                    { employees.employees.map((employee) => (
-                                        <SwipeToDelete key={employee.id} height={100} onDelete={() => this.handleDelete(employee.id)} className="employee-table__employee">
+                                    { employeesGroup.employees.map((employee) => (
+                                        <SwipeToDelete key={employee.id} height={70} onDelete={() => this.handleDelete(employee.id)} className="employee-table__employee">
                                 
                                             <div className="employee-table__employee--avatar">
                                                 <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
                                             </div>
                 
                                             <div className="employee-table__employee--credentials">
-                                                <Link to={`/employee/${employee.id}`} style={{textDecoration: "none"}}>
+                                                <Link to={{pathname:`/employee/${employee.id}`, state: {employee, employees, typing, searched: searchedEmployees, Departments: Departments} }} style={{textDecoration: "none"}}>
                                                     <div className="employee-table__employee--name">
                                                         {employee.firstName} {employee.lastName} <span><i className="fas fa-external-link-alt"></i></span>
                                                     </div>

@@ -1,0 +1,159 @@
+.locations-container {
+	width: 100%;
+
+	.locations {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		margin-top: 3rem;
+
+		&__success {
+			background-color: green;
+			margin: 2rem 0;
+			color: white;
+			text-align: center;
+			padding: 1rem;
+		}
+
+		&__error {
+			background-color: red;
+			margin: 2rem 0;
+			color: white;
+			text-align: center;
+			padding: 1rem;
+		}
+
+		&__add {
+			width: 100%;
+			margin-top: 4rem;
+
+			form {
+				width: 100%;
+				display: flex;
+				justify-content: center;
+
+				input {
+					padding: .5rem;
+					border: 1px solid rgba(0, 0, 0, .1);
+					border-right: none;
+
+					&:focus {
+						outline: none;
+					}
+				}
+
+				button {
+					padding: .2rem .4rem;
+					border: none;
+					background-color: green;
+					color: white;
+					cursor: pointer;
+
+					&:focus {
+						outline: none;
+					}
+				}
+			}
+		}
+
+		&__title {
+			margin-bottom: 1rem;
+		}
+
+		&__location {
+			width: 100%;
+
+			& > div {
+				width: 100%;
+			}
+
+			&--name {
+				width: 100%;
+				margin-bottom: .4rem;
+				color: rgba(0, 0, 0, .6);
+				border-bottom: 1px solid rgba(0, 0, 0, .1);
+
+				&__name {
+					font-size: 1.2rem;
+					font-weight: 700;
+					text-align: center;
+				}
+
+				div {
+					text-align: center;
+					padding: .4rem;
+				}
+
+				input {
+					text-align: center;
+					width: 100%;
+					padding: .4rem;
+					border: none;
+					border-bottom: 1px solid rgba(0, 0, 0, .1);
+					font-size: 1.2rem;
+					font-weight: 700;
+					color: rgba(0, 0, 0, .6);
+
+					&::placeholder {
+						color: rgba(0, 0, 0, .3);
+					}
+
+					&:focus {
+						outline: none;
+					}
+				}
+			}
+
+			&--departments {
+				text-align: center;
+				padding: 1rem 0;
+				background-color: rgba(0, 0, 0, .03);
+
+				&__title {
+					color: rgba(0, 0, 0, .5);
+				}
+
+				&__department {
+					text-transform: capitalize;
+				}
+			}
+
+			&--controls {
+				padding: .2rem;
+				margin-bottom: 1rem;
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 3px dashed rgba(0, 0, 0, .04);
+
+				button {
+					border: none;
+					padding: .4rem;
+					margin-right: .2rem;
+					color: white;
+					border-radius: .2rem;
+					cursor: pointer;
+
+					&:focus {
+						outline: none;
+					}
+				}
+
+				.cancel {
+					background-color: red;
+				}
+
+				.edit {
+					background-color: green;
+				}
+
+				.update {
+					background-color: green;
+				}
+
+				.delete {
+					background-color: red;
+				}
+			}
+		}
+	}
+}

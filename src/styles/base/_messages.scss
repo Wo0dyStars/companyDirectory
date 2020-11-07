@@ -51,31 +51,26 @@
 	text-decoration: none;
 
 	div {
-		display: flex;
-		align-items: center;
-		padding: .1rem .2rem;
-		border-radius: .6rem;
+		@include flexCenter;
 		cursor: pointer;
-
-		@include respond(phone) {
-			padding: .3rem .4rem;
-		}
+		padding: .2rem 0;
 	}
 
 	&--icon {
 		font-size: 1.6rem;
-		color: $color-pink;
+		color: white;
+		margin-right: .2rem;
 
 		@include respond(phone) {
-			font-size: 1.2rem;
+			font-size: 1rem;
 		}
 	}
 
 	&--title {
-		font-size: 1.2rem;
+		font-size: 1rem;
 
 		@include respond(phone) {
-			font-size: 1rem;
+			font-size: .7rem;
 		}
 	}
 }

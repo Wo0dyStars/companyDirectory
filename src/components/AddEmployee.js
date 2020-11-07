@@ -17,32 +17,54 @@ export default class AddEmployee extends React.Component {
             expertise: "",
             phone: "",
             biography: "",
-            avatar: "",
+            avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg",
             error: "",
             success: "",
             isComponentLoaded: false,
-            Departments: []
+            Departments: [],
+            expertiseList: [],
+            isAvatarURL: false
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleNewExpertise = this.handleNewExpertise.bind(this);
+        this.handleDeleteExpertise = this.handleDeleteExpertise.bind(this);
+        this.runFormValidation = this.runFormValidation.bind(this);
     }
 
     componentDidMount() {
+        window.scrollTo(0, 0);
         setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
 
-        serverAPI("GET", "department/get.php")
-            .then((departments) => {
-                let departmentNames = [];
-                for (let i = 0; i < departments.data.length; i++) {
-                    if ( departments.data[i].name !== "" ) {
-                        departmentNames.push(departments.data[i].name);
-                    }
+        if (this.props.location.state) {
+            this.setState({ Departments: this.props.location.state.Departments, isLoaded: true });
+        }
+        
+        else {
+            serverAPI("GET", "department/get.php")
+            .then(departments => {
+                const allDepartments = [];
+                for (let [key, department] of Object.entries(departments.data)) {
+                    allDepartments.push(department.name);
                 }
-                
-                this.setState({ Departments: departmentNames, isLoaded: true });
+                this.setState({Departments: allDepartments, isLoaded: true});
             })
-            .catch((error) => this.setState({error, isLoaded: true}))
+        }
+    }
+
+    handleNewExpertise = (event) => {
+        const index = Number(event.target.name.split("-")[1]);
+        let expertiseChanged = this.state.expertiseList.map((expertise, ind) => ((index === ind) ? event.target.value : expertise ));
+
+        this.setState({expertiseList:expertiseChanged});
+    }
+
+    handleDeleteExpertise = (event) => {
+        const index = Number(event.target.name.split("-")[1]);
+        let expertiseDeleted = this.state.expertiseList.filter((expertise, ind) => (index !== ind) );
+
+        this.setState({expertiseList: expertiseDeleted});
     }
 
     handleChange = (event) => {
@@ -50,18 +72,30 @@ export default class AddEmployee extends React.Component {
         else { this.setState({ [event.target.name]: event.target.value }); }
     }
 
+    runFormValidation = () => {
+        const {firstName, lastName, email} = this.state;
+        if (( firstName.length > 0 && lastName.length > 0 && email.length > 0 && email.includes("@"))) {
+            return true;
+        }
+
+        return false;
+    }
+
     handleSubmit = (event) => {
         event.preventDefault();
 
-        this.setState({ isLoaded: false });
-        serverAPI("POST", "insert.php", JSON.stringify(this.state))
-            .then(() => this.setState(
-                { 
-                    firstName: "", lastName: "", email: "", jobTitle: "", departmentID: 1, expertise: "", phone: "", biography: "", avatar: "",
-                    success: "You have just added a new employee. Well done!",
-                    isLoaded: true
-                }))
-            .catch((error) => this.setState({ error: "Something went wrong. Please try again!", isLoaded: true, errorLoading: error }));
+
+        console.log(this.state);
+        console.log(this.state.expertiseList.join(", "));
+        // this.setState({ isLoaded: false });
+        // serverAPI("POST", "insert.php", JSON.stringify(this.state))
+        //     .then(() => this.setState(
+        //         { 
+        //             firstName: "", lastName: "", email: "", jobTitle: "", departmentID: 1, expertise: "", phone: "", biography: "", avatar: "",
+        //             success: "You have just added a new employee. Well done!",
+        //             isLoaded: true
+        //         }))
+        //     .catch((error) => this.setState({ error: "Something went wrong. Please try again!", isLoaded: true, errorLoading: error }));
     }
 
     componentDidUpdate() {
@@ -69,7 +103,7 @@ export default class AddEmployee extends React.Component {
     }
 
     render() {
-        const { firstName, lastName, email, jobTitle, expertise, departmentID, avatar, phone, biography, error, Departments, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
+        const { firstName, lastName, email, jobTitle, expertiseList, expertise, departmentID, avatar, isAvatarURL, phone, biography, error, Departments, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
 
         if ( errorLoading ) {
             return <div>Error: {errorLoading.message}</div>
@@ -86,29 +120,54 @@ export default class AddEmployee extends React.Component {
 
             let newEmployeeForm = (
                 <form className="newEmployee-form" onSubmit={this.handleSubmit}>
-                    <input type="text" name="firstName" value={firstName} placeholder="Your first name" required onChange={this.handleChange} />
-                    <input type="text" name="lastName" value={lastName} placeholder="Your last name" required onChange={this.handleChange} />
-                    <input type="email" name="email" value={email} placeholder="Your email address" required onChange={this.handleChange} />
+                    <div className="newEmployee__navigation">
+                        <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="routerLink">
+                            <div>
+                                <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
+                                <div>employees</div>
+                            </div>
+                        </Link>
+                        <button className="avatar-button done-button" type="submit" disabled={!this.runFormValidation()}>Done</button>
+                    </div>
+
+                    <div>
+                        <img className="preview-avatar" src={avatar} alt="Avatar"/>
+                        <div className="preview-text">Your Default Avatar</div>
+                        <button className="avatar-button" type="button" onClick={() => this.setState({isAvatarURL: !isAvatarURL})}>{ isAvatarURL ? "Discard" : "Change" }</button>
+                        {isAvatarURL && <input type="text" name="avatar" value={avatar} placeholder="Your avatar URL" onChange={this.handleChange} />}
+                    </div>
+                    
+
+                    <input type="text" name="firstName" value={firstName} placeholder="First name" required onChange={this.handleChange} />
+                    <input type="text" name="lastName" value={lastName} placeholder="Last name" required onChange={this.handleChange} />
+                    <input type="email" name="email" value={email} placeholder="Email address" required onChange={this.handleChange} />
                     
                     <input type="text" name="jobTitle" value={jobTitle} placeholder="Job Title" onChange={this.handleChange} />
                     <select name="departmentID" value={departmentID} onChange={this.handleChange}>{ departments }</select>
-                    <div className="expertise-list">
-                        Please list the skills separated by a comma
+
+                    <div className="expertiseList">
+                        { expertiseList ? (
+                            expertiseList.map((expertise, index) => (
+                                <div className="exp-exp" key={`expertise-${index}`}>
+                                    <div>
+                                        <button className="exp-btn exp-btn--delete" type="button" name={`expertise-${index}`} onClick={this.handleDeleteExpertise}>-</button>
+                                        <div>{ index+1 }</div>
+                                        <div><i className="fas fa-angle-right"></i></div>
+                                    </div>
+                                    <input className="exp-input" type="text" name={`expertise-${index}`} value={expertise} onChange={this.handleNewExpertise} />
+                                </div>
+                            )) 
+                        ) : <div></div>}
+                        <div className="exp-newexp" onClick={() => this.setState({expertiseList: [...expertiseList, ""]})}>
+                            <div>
+                                <button className="exp-btn exp-btn--add" type="button">+</button>
+                            </div>
+                            <label>Add expertise</label>
+                        </div>
                     </div>
-                    <input type="text" name="expertise" value={expertise} placeholder="Expertise" onChange={this.handleChange} />
+
                     <input type="text" name="phone" value={phone} placeholder="Phone number" onChange={this.handleChange} />
                     <textarea type="text" maxLength="300" name="biography" value={biography} placeholder="Biography..." onChange={this.handleChange} ></textarea>
-                    <input type="text" name="avatar" value={avatar} placeholder="Your avatar URL" onChange={this.handleChange} />
-
-                    { avatar ? ( 
-                        <div>
-                            <div className="preview-text">Your Preview</div>
-                            <img className="preview-avatar" src={avatar} alt="Avatar"/>
-                        </div> 
-                        ) : <div></div> }
-
-
-                    <button className="btn btn--pink mg-large" type="submit">Create New Employee</button>
                 </form>
             )
 
@@ -138,11 +197,6 @@ export default class AddEmployee extends React.Component {
 
             return (
                 <div className={isComponentLoaded ? "newEmployee" : "newEmployee entranceAddEmployee"}>
-                    <Link to="/" className="routerLink">
-                        <div>
-                            <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
-                        </div>
-                    </Link>
 
                     <div className="newEmployee-text">
                         <h3 className="newEmployee-text-background">Add a new employee</h3>
