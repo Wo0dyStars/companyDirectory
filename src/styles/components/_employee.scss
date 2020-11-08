@@ -155,7 +155,7 @@
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
-	background-color: $color-pink;
+	background-color: #182848;
 	position: fixed;
 	z-index: 1000;
 
@@ -177,6 +177,8 @@
 		display: flex;
 		text-decoration: none;
 		color: white;
+		@include flexCenter;
+		height: 100%;
 
 		&--icon {
 			font-size: 1.6rem;
@@ -185,6 +187,7 @@
 
 		&--text {
 			@include flexCenter;
+			height: 100%;
 		}
 	}
 }

@@ -5,6 +5,7 @@ import { goToTop } from 'react-scrollable-anchor';
 // import SwipeToDelete from 'react-swipe-to-delete-component';
 // import Swipeable from "./Swipeable";
 import SwipeToDelete from 'react-swipe-to-delete-ios';
+import Swipeable from "./Swipeable";
 
 export default class Overview extends React.Component {
     constructor(props) {
@@ -30,14 +31,14 @@ export default class Overview extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
         this.handleChangeSorter = this.handleChangeSorter.bind(this);
         this.handleChangeSorting = this.handleChangeSorting.bind(this);
         this.handleType = this.handleType.bind(this);
         this.modal = this.modal.bind(this);
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-
+        this.onOpenProfile = this.onOpenProfile.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
 
     componentDidMount() {
@@ -88,6 +89,32 @@ export default class Overview extends React.Component {
         } else { this.setState({ isArrowVisible: false }) };
     }
 
+    onOpenProfile = (employeeID) => {
+        const {employees, typing, searchedEmployees, Departments} = this.state;
+        const employee = employees.filter(employee => employee.id === employeeID)[0];
+        
+        this.props.history.push({
+            pathname:`/employee/${employeeID}`,
+            state: {
+                employee, employees, typing, searched: searchedEmployees, Departments
+            }
+        });
+    }
+
+    onDelete = (employeeID) => {
+        this.setState({ isLoaded: false });
+        serverAPI("POST", "delete.php", JSON.stringify({id: employeeID}))
+        .then(() => {
+            const person = this.state.employees.filter(employee => employee.id === employeeID)[0];
+            const personName = person.firstName + " " + person.lastName;
+            this.setState({ employees: this.state.employees.filter(employee => employee.id !== employeeID),
+                            searchedEmployees: this.state.searchedEmployees.filter(employee => employee.id !== employeeID),
+                            isLoaded: true,
+                            successOnDeletion: `You have now successfully deleted ${personName} from your directory.` });
+        })
+        .catch((error) => this.setState({ isLoaded: true, error }));
+    }
+
     handleChange = (event) => {
         let found = false;
         const currentFilters = this.state.filters.map((filter) => {
@@ -116,21 +143,6 @@ export default class Overview extends React.Component {
 
     handleChangeSorting = (event) => {
         this.setState({ currentSorting: event.target.value });
-    }
-
-    handleDelete = (employeeID) => {
-        
-        this.setState({ isLoaded: false });
-        serverAPI("POST", "delete.php", JSON.stringify({id: employeeID}))
-        .then(() => {
-            const person = this.state.employees.filter(employee => employee.id === employeeID)[0];
-            const personName = person.firstName + " " + person.lastName;
-            this.setState({ employees: this.state.employees.filter(employee => employee.id !== employeeID),
-                            searchedEmployees: this.state.searchedEmployees.filter(employee => employee.id !== employeeID),
-                            isLoaded: true,
-                            successOnDeletion: `You have now successfully deleted ${personName} from your directory.` });
-        })
-        .catch((error) => this.setState({ isLoaded: true, error }));
     }
 
     handleSubmit = (e) => {
@@ -358,18 +370,15 @@ export default class Overview extends React.Component {
                                 <div className="employee-table__groupLetter">{ group }</div>
                                 <div>
                                     { employeesGroup.employees.map((employee) => (
-                                        <SwipeToDelete key={employee.id} height={70} onDelete={() => this.handleDelete(employee.id)} className="employee-table__employee">
-                                
+                                        <Swipeable key={employee.id} name={employee.id} onClick={this.onOpenProfile} onDelete={this.onDelete} className="employee-table__employee">
                                             <div className="employee-table__employee--avatar">
                                                 <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
                                             </div>
                 
                                             <div className="employee-table__employee--credentials">
-                                                <Link to={{pathname:`/employee/${employee.id}`, state: {employee, employees, typing, searched: searchedEmployees, Departments: Departments} }} style={{textDecoration: "none"}}>
-                                                    <div className="employee-table__employee--name">
-                                                        {employee.firstName} {employee.lastName} <span><i className="fas fa-external-link-alt"></i></span>
-                                                    </div>
-                                                </Link>
+                                                <div className="employee-table__employee--name">
+                                                    {employee.firstName} {employee.lastName}
+                                                </div>
                                                 
                                                 <div className="employee-table__employee--department"> 
                                                     { employee.department }
@@ -394,7 +403,7 @@ export default class Overview extends React.Component {
                                                     <span>Out</span>
                                                 </div>
                                             ) }
-                                        </SwipeToDelete>
+                                        </Swipeable>
                                     )) }
                                 </div>
                             </div>

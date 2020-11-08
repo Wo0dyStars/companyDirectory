@@ -1,8 +1,10 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import Swipeable from "./Swipeable";
 
 export default class Locations extends React.Component {
+
     constructor(props) {
         super(props);
 
@@ -26,7 +28,11 @@ export default class Locations extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+
     componentDidMount() {
+        window.addEventListener("mouseup", this.onDragEndMouse);
+        window.addEventListener("touchend", this.onDragEndTouch);
+
         serverAPI("GET", "/location/get.php")
             .then(locationsData => {
                 const locations = locationsData.data.map(location => ({ id: location.id, name: location.name }));
@@ -48,7 +54,7 @@ export default class Locations extends React.Component {
                             departmentsForLocations.push({ id: locations[i].id, departments: localDepartments });
                         }
 
-                        this.setState({ locations, isLoaded: true, isEditing, currentValues, departments: departmentsForLocations, successMessage: "You have loaded locations successfully!" });
+                        this.setState({ locations, isLoaded: true, isEditing, currentValues, departments: departmentsForLocations });
                     })
                     .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading locations" }))
             })
@@ -218,7 +224,7 @@ export default class Locations extends React.Component {
                     <div className="locations__add">
                         <form onSubmit={this.handleSubmit}>
                             <input type="text" value={currentLocation} placeholder="Location name" onChange={this.handleCurrentLocation} />
-                            <button type="submit">Add location</button>
+                            <button type="submit"><i className="fas fa-plus-square"></i></button>
                         </form>
                     </div>
 
@@ -234,6 +240,7 @@ export default class Locations extends React.Component {
                         </div>
                     ) }
                     <div className="locations">
+
                         { locations.map((location, index) => (
                             <div key={`location-${index}`} className="locations__location">
                                 { !isEditing.filter(x => x.id === location.id)[0].edit ?
@@ -259,8 +266,15 @@ export default class Locations extends React.Component {
                                             }) }
                                         </div>
                                         <div className="locations__location--controls">
-                                            <button className="delete" type="button" name={`location-${location.id}`} onClick={this.handleDelete}>Remove</button>
-                                            <button className="edit" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Edit</button>
+                                            <div>
+                                                <button className="delete" type="button" name={`location-${location.id}`} onClick={this.handleDelete}>Remove</button>
+                                                <i className="fas fa-trash-alt"></i>
+                                            </div>
+                                            <div>
+                                                <button className="edit" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Edit</button>
+                                                <i className="fas fa-edit"></i>
+                                            </div>
+                                            
                                         </div>
                                         
                                     </div>
@@ -271,8 +285,14 @@ export default class Locations extends React.Component {
                                             <input type="text" name={`location-${location.id}`} placeholder={location.name} value={currentValues.filter(x => x.id === location.id)[0].value} onChange={this.handleChange} />
                                         </div>
                                         <div className="locations__location--controls">
-                                            <button className="cancel" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Cancel</button>
-                                            <button className="update" type="button" name={`location-${location.id}`} onClick={this.handleUpdate}>Update</button>
+                                            <div>
+                                                <button className="cancel" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Cancel</button>
+                                                <i className="fas fa-window-close"></i>
+                                            </div>
+                                            <div>
+                                                <button className="update" type="button" name={`location-${location.id}`} onClick={this.handleUpdate}>Update</button>
+                                                <i className="fas fa-archive"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 ) }

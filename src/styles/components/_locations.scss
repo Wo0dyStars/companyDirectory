@@ -36,6 +36,7 @@
 					padding: .5rem;
 					border: 1px solid rgba(0, 0, 0, .1);
 					border-right: none;
+					width: 80%;
 
 					&:focus {
 						outline: none;
@@ -45,8 +46,8 @@
 				button {
 					padding: .2rem .4rem;
 					border: none;
-					background-color: green;
-					color: white;
+					color: green;
+					font-size: 2rem;
 					cursor: pointer;
 
 					&:focus {
@@ -72,6 +73,8 @@
 				margin-bottom: .4rem;
 				color: rgba(0, 0, 0, .6);
 				border-bottom: 1px solid rgba(0, 0, 0, .1);
+				background-color: rgba(24, 40, 72, .8);
+				color: white;
 
 				&__name {
 					font-size: 1.2rem;
@@ -119,18 +122,24 @@
 			}
 
 			&--controls {
-				padding: .2rem;
+				padding: .4rem;
 				margin-bottom: 1rem;
 				display: flex;
 				justify-content: space-between;
 				border-bottom: 3px dashed rgba(0, 0, 0, .04);
 
+				div {
+					@include flexCenter;
+				}
+
 				button {
 					border: none;
 					padding: .4rem;
 					margin-right: .2rem;
-					color: white;
+					color: rgba(44, 5, 77, 0.8);
+					font-size: 1.2rem;
 					border-radius: .2rem;
+					background-color: transparent;
 					cursor: pointer;
 
 					&:focus {
@@ -138,22 +147,71 @@
 					}
 				}
 
-				.cancel {
-					background-color: red;
+				i {
+					font-size: 1.5rem;
 				}
 
-				.edit {
-					background-color: green;
+				.cancel + i {
+					color: red;
 				}
 
-				.update {
-					background-color: green;
+				.edit + i {
+					color: green;
 				}
 
-				.delete {
-					background-color: red;
+				.update + i {
+					color: green;
+				}
+
+				.delete + i {
+					color: red;
 				}
 			}
 		}
 	}
+}
+
+.Item {
+	width: 100%;
+	align-items: center;
+	box-sizing: border-box;
+	background-color: #fff;
+	height: 100%;
+	display: flex;
+}
+
+.BouncingListItem {
+	transition: transform 0.5s ease-out;
+	width: 100%;
+	align-items: center;
+	box-sizing: border-box;
+	background-color: #fff;
+	height: 100%;
+	display: flex;
+}
+
+.Background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	font-size: 2rem;
+
+	padding-right: 16px;
+	color: white;
+	background-color: $color-cancel;
+	box-sizing: border-box;
+}
+
+.Wrapper {
+	position: relative;
+	transition: max-height 0.5s ease;
+	max-height: 1000px;
+	transform-origin: top;
+	overflow: hidden;
+	width: 100%;
 }

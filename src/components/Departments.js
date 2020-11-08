@@ -284,8 +284,8 @@ export default class Departments extends React.Component {
                                     <option value="select">Location</option>
                                     { Locations }
                                 </select>
+                                <button type="submit"><i className="fas fa-plus-square"></i></button>
                             </div>
-                            <button type="submit">Add department</button>
                         </form>
                     </div>
 
@@ -312,8 +312,14 @@ export default class Departments extends React.Component {
                                         <div className="departments__department--employees">Currently has { department.employees } employees</div>
 
                                         <div className="departments__department--controls">
-                                            <button className="delete" type="button" name={`department-${department.id}`} onClick={this.handleDelete}>Remove</button>
-                                            <button className="edit" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Edit</button>
+                                        <div>
+                                                <button className="delete" type="button" name={`department-${department.id}`} onClick={this.handleDelete}>Remove</button>
+                                                <i className="fas fa-trash-alt"></i>
+                                            </div>
+                                            <div>
+                                                <button className="edit" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Edit</button>
+                                                <i className="fas fa-edit"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 ) : (
@@ -327,8 +333,14 @@ export default class Departments extends React.Component {
                                         </div>
 
                                         <div className="departments__department--controls">
-                                            <button className="cancel" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Cancel</button>
-                                            <button className="update" type="button" name={`department-${department.id}`} onClick={this.handleUpdate}>Update</button>
+                                            <div>
+                                                <button className="cancel" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Cancel</button>
+                                                <i className="fas fa-window-close"></i>
+                                            </div>
+                                            <div>
+                                                <button className="update" type="button" name={`department-${department.id}`} onClick={this.handleUpdate}>Update</button>
+                                                <i className="fas fa-archive"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 ) }
