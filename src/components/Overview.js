@@ -247,7 +247,7 @@ export default class Overview extends React.Component {
                     </div>
                 </div>
 
-                <article className={isModalOpen ? "employee-table-hide" : "employee-table"}>
+                <article className="employee-table">
                     <div className="employee-table__heading">
                         <div>Photo</div>
                         <div>Name</div>
