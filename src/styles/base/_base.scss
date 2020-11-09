@@ -25,3 +25,13 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+select,
+option {
+	-webkit-appearance: none;
+	background-color: rgba(24, 40, 72, .8);
+	border-color: transparent;
+	font-family: Arial, ArialHebrew, sans-serif;
+	text-align: center;
+	color: #fff;
+}

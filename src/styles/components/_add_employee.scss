@@ -116,6 +116,10 @@
 		@include flexCenter;
 		flex-direction: column;
 
+		input {
+			color: rgba(0, 0, 0, .6);
+		}
+
 		input,
 		select,
 		textarea {
@@ -127,7 +131,6 @@
 			padding: 1rem;
 			font-size: 1rem;
 			font-weight: 900;
-			color: rgba(0, 0, 0, .6);
 
 			@include respond(phone) {
 				width: 100%;

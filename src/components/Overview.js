@@ -29,6 +29,7 @@ export default class Overview extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onOpenProfile = this.onOpenProfile.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.clearSearching = this.clearSearching.bind(this);
     }
 
     componentDidMount() {
@@ -47,7 +48,7 @@ export default class Overview extends React.Component {
                     for (let department of Object.values(departments.data)) {
                         allDepartments.push({ id: department.id, name: department.name });
                     }
-                    
+
                     this.setState({Departments: allDepartments});
                 })
                 .catch(() => this.setState({ isLoaded: true, errorTitle: "Loading unsuccessful", error: "An error occurred while loading your employees" }));
@@ -98,8 +99,18 @@ export default class Overview extends React.Component {
         .catch(() => this.setState({ isLoaded: true, errorTitle: "Deletion unsuccessful", error: "An error occurred while deleting your employee" }));
     }
 
+    clearSearching = (event) => {
+        this.setState({ isSearching: false, searchedEmployees: this.state.employees, typing: "" });
+    }
+
     handleType = (event) => {
         this.setState({ typing: event.target.value });
+
+        if ( event.target.value !== "" ) {
+            this.setState({ isSearching: true })
+        } else {
+            this.setState({ isSearching: false });
+        }
 
         let filteredEmployees = this.state.employees.filter(employee => {
             const { firstName, lastName, jobTitle, department, email, location, expertise } = employee;
@@ -117,7 +128,7 @@ export default class Overview extends React.Component {
     }
 
     render() {
-        const { error, errorTitle, success, successTitle, isLoaded, employees, isModalOpen, Departments, searchedEmployees, typing,  isArrowVisible } = this.state;
+        const { error, errorTitle, success, successTitle, isLoaded, employees, isSearching, isModalOpen, Departments, searchedEmployees, typing,  isArrowVisible } = this.state;
 
         const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXZ".split("");
         let ABCList = (
@@ -128,7 +139,7 @@ export default class Overview extends React.Component {
             </div>);
         
         let employeesGrouped = searchedEmployees.reduce((employees, currentEmployee) => {
-                let currentGroup = currentEmployee.firstName[0];
+                let currentGroup = currentEmployee.firstName[0].toUpperCase();
     
                 if ( !employees[currentGroup] ) employees[currentGroup] = { currentGroup, employees: [ currentEmployee ] }
                 else { employees[currentGroup].employees.push(currentEmployee) }
@@ -179,9 +190,10 @@ export default class Overview extends React.Component {
                 <div id="controls">
                     <div id="controls-background"></div>
 
-                    <div className={this.state.isSearching ? "filters_ filters_-searching" : "filters_"}>
+                    <div className={isSearching ? "filters_ filters_-searching" : "filters_"}>
                         <span onClick={() => this.setState({isSearching: !this.state.isSearching})}><i className="fas fa-search"></i></span>
                         <input type="text" name="search" value={typing} placeholder="Search" onChange={this.handleType} />
+                        { isSearching ? <span className="filters_-searching--x" onClick={this.clearSearching}>X</span> : <span></span> }
                     </div>
 
                     <div className="modal-button" onClick={this.toggleModal}>
@@ -209,7 +221,7 @@ export default class Overview extends React.Component {
                                     <i className="fas fa-building"></i>
                                     <div>Departments</div>
                                     <p>
-                                        Recently relocated or established a new office? Do not forget to update your locations.
+                                        Planning to introduce new departments or extending your business? Update your departments.
                                     </p>
                                 </Link>
                             </div>
@@ -219,7 +231,7 @@ export default class Overview extends React.Component {
                                     <i className="fas fa-user-plus"></i>
                                     <div>New Member</div>
                                     <p>
-                                        Recently relocated or established a new office? Do not forget to update your locations.
+                                        A new member has just joined your team? Add them to your member directory.
                                     </p>
                                 </Link>
                             </div>

@@ -302,6 +302,7 @@ export default class Departments extends React.Component {
                         <form onSubmit={this.handleSubmit}>
                             <div>
                                 <input type="text" value={currentDepartment} placeholder="Department name" onChange={this.handleCurrentDepartment} />
+                                
                                 <select name="location" defaultValue="select" autoComplete="off" onChange={this.handleChangeLocation}>
                                     <option value="select">Location</option>
                                     { Locations }
