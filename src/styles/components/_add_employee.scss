@@ -12,7 +12,7 @@
 	.avatar-button {
 		border: none;
 		cursor: pointer;
-		color: blue;
+		color: white;
 		background-color: transparent;
 		margin-bottom: 1rem;
 
@@ -26,8 +26,12 @@
 	}
 
 	.expertiseList {
-		width: 100%;
+		width: 40%;
 		margin: 2rem 0;
+
+		@include respond(phone) {
+			width: 100%;
+		}
 	}
 
 	.form-label {
@@ -43,14 +47,14 @@
 			width: 100%;
 
 			input {
-				height: 3rem;
 				border: none;
+				width: 100%;
+				margin: 0;
 				border-bottom: 1px solid rgba(0, 0, 0, .1);
 			}
 
 			> div {
 				@include flexCenter;
-				height: 3rem;
 				border-bottom: 1px solid rgba(0, 0, 0, .1);
 				border-right: 1px solid rgba(0, 0, 0, .1);
 
@@ -95,7 +99,7 @@
 	}
 
 	&__navigation {
-		background-color: $color-pink;
+		background-color: #182848;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -103,6 +107,9 @@
 		position: fixed;
 		width: 100%;
 		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		max-width: 1700px;
 	}
 
 	&-form {
@@ -162,32 +169,28 @@
 	&-text {
 		position: relative;
 		text-align: center;
-		margin: 2rem .5rem;
+		margin: 5rem .5rem;
+		margin-bottom: 1rem;
 
 		@include respond(phone) {
-			margin-top: 2rem;
 			display: none;
 		}
 
 		&-background {
 			@include absoluteCenter;
 
-			color: $color-pink;
+			color: #182848;
 			bottom: -1rem;
 			font-size: 4rem;
 			opacity: 0.05;
 			letter-spacing: -.4rem;
 			user-select: none;
 			width: 100%;
-
-			@include respond(phone) {
-				font-size: 2.5rem;
-			}
 		}
 
 		&-header {
 			font-size: 2rem;
-			color: $color-pink;
+			color: #182848;
 			text-align: center;
 		}
 	}
@@ -203,11 +206,24 @@
 }
 
 .preview {
+	@include flexCenter;
+	flex-direction: column;
+	width: 100%;
+
 	&-text {
 		text-align: center;
 		font-size: 1.2rem;
-		color: $color-pink;
+		color: #182848;
+		margin-top: 1rem;
 		margin-bottom: 1rem;
+	}
+
+	input {
+		width: 40%;
+
+		@include respond(phone) {
+			width: 100%;
+		}
 	}
 
 	&-avatar {
@@ -215,5 +231,9 @@
 		width: 10rem;
 		height: 10rem;
 		margin-top: 5rem;
+	}
+
+	.avatar-button {
+		color: #004e92;
 	}
 }

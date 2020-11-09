@@ -1,26 +1,22 @@
 .locations-container {
 	width: 100%;
+	background: linear-gradient(to right, rgba(214, 109, 117, .1), rgba(226, 149, 135, .1));
 
 	.locations {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+		grid-auto-rows: 20rem;
+		grid-column-gap: 2rem;
+		width: 90%;
+		margin: 0 auto;
 		margin-top: 3rem;
 
-		&__success {
-			background-color: green;
-			margin: 2rem 0;
-			color: white;
-			text-align: center;
-			padding: 1rem;
-		}
-
-		&__error {
-			background-color: red;
-			margin: 2rem 0;
-			color: white;
-			text-align: center;
-			padding: 1rem;
+		@include respond(phone) {
+			display: flex;
+			flex-direction: column;
+			width: 90%;
+			margin: 0 auto;
+			margin-top: 3rem;
 		}
 
 		&__add {
@@ -36,7 +32,11 @@
 					padding: .5rem;
 					border: 1px solid rgba(0, 0, 0, .1);
 					border-right: none;
-					width: 80%;
+					width: 30%;
+
+					@include respond(phone) {
+						width: 80%;
+					}
 
 					&:focus {
 						outline: none;
@@ -49,6 +49,7 @@
 					color: green;
 					font-size: 2rem;
 					cursor: pointer;
+					background-color: transparent;
 
 					&:focus {
 						outline: none;
@@ -63,6 +64,15 @@
 
 		&__location {
 			width: 100%;
+			transition: all .4s ease;
+
+			&:hover {
+				transform: translateY(-1rem);
+
+				@include respond(phone) {
+					transform: translateY(0);
+				}
+			}
 
 			& > div {
 				width: 100%;
@@ -75,6 +85,8 @@
 				border-bottom: 1px solid rgba(0, 0, 0, .1);
 				background-color: rgba(24, 40, 72, .8);
 				color: white;
+				border-top-left-radius: 1rem;
+				border-top-right-radius: 1rem;
 
 				&__name {
 					font-size: 1.2rem;
@@ -110,7 +122,12 @@
 			&--departments {
 				text-align: center;
 				padding: 1rem 0;
-				background-color: rgba(0, 0, 0, .03);
+				background-color: white;
+				min-height: 10rem;
+
+				@include respond(phone) {
+					min-height: 0;
+				}
 
 				&__title {
 					color: rgba(0, 0, 0, .5);
@@ -127,6 +144,7 @@
 				display: flex;
 				justify-content: space-between;
 				border-bottom: 3px dashed rgba(0, 0, 0, .04);
+				background-color: rgba(255, 255, 255, .7);
 
 				div {
 					@include flexCenter;
@@ -136,8 +154,8 @@
 					border: none;
 					padding: .4rem;
 					margin-right: .2rem;
-					color: rgba(44, 5, 77, 0.8);
-					font-size: 1.2rem;
+					color: #3a7bd5;
+					font-size: 1rem;
 					border-radius: .2rem;
 					background-color: transparent;
 					cursor: pointer;
@@ -148,7 +166,8 @@
 				}
 
 				i {
-					font-size: 1.5rem;
+					font-size: 1.3rem;
+					background-color: transparent;
 				}
 
 				.cancel + i {
@@ -169,49 +188,4 @@
 			}
 		}
 	}
-}
-
-.Item {
-	width: 100%;
-	align-items: center;
-	box-sizing: border-box;
-	background-color: #fff;
-	height: 100%;
-	display: flex;
-}
-
-.BouncingListItem {
-	transition: transform 0.5s ease-out;
-	width: 100%;
-	align-items: center;
-	box-sizing: border-box;
-	background-color: #fff;
-	height: 100%;
-	display: flex;
-}
-
-.Background {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	z-index: -1;
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-	font-size: 2rem;
-
-	padding-right: 16px;
-	color: white;
-	background-color: $color-cancel;
-	box-sizing: border-box;
-}
-
-.Wrapper {
-	position: relative;
-	transition: max-height 0.5s ease;
-	max-height: 1000px;
-	transform-origin: top;
-	overflow: hidden;
-	width: 100%;
 }

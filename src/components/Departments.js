@@ -1,6 +1,7 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default class Departments extends React.Component {
     constructor(props) {
@@ -15,9 +16,11 @@ export default class Departments extends React.Component {
             currentValues: [],
             departments: [],
             isLoaded: false,
-            successMessage: "",
-            errorMessage: "",
-            departmentsFinal: []
+            departmentsFinal: [],
+            error: "",
+            errorTitle: "",
+            success: "",
+            successTitle: ""
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -51,14 +54,14 @@ export default class Departments extends React.Component {
                                 departmentsFinal.push({ id: departments.data[i].id, name: departments.data[i].name, location: { id: departments.data[i].locationID, name: locationName}, employees: employeeList.length });
                                 
                             }
-                            console.log("final", departmentsFinal);
+                            
                             this.setState({ isLoaded: true, departmentsFinal, isEditing, currentValues, locations: locations.data });
                         })
-                        .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading departments" }))
+                        .catch(() => this.setState({ isLoaded: true, error: "An error occurred while loading employees", errorTitle: "Loading unsuccessful" }))
                     })
-                    .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading departments" }))
+                    .catch(() => this.setState({ isLoaded: true, error: "An error occurred while loading locations", errorTitle: "Loading unsuccessful" }))
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading departments" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while loading departments", errorTitle: "Loading unsuccessful" }))
     }
 
     handleChange = (event) => {
@@ -136,8 +139,10 @@ export default class Departments extends React.Component {
             currentLocationID = currentValue.locationID;
         }
 
+        let currentLocationName = this.state.departmentsFinal.filter(d => d.location.id === currentLocationID)[0].location.name;
+
         if ( currentValue.value === "" ) {
-            this.setState({ isLoaded: true, errorMessage: "Please fill up the fields properly!" });
+            this.setState({ isLoaded: true, error: "Please fill up the fields properly!", errorTitle: "Missing fields" });
         } else {
             serverAPI("POST", "/department/update.php", {id: index, name: currentValue.value, locationID: Number(currentLocationID)})
             .then((updatedLocation) => {
@@ -160,7 +165,8 @@ export default class Departments extends React.Component {
                                 name: currentValue.value,
                                 location: {
                                     ...department.location,
-                                    locationID: currentLocationID
+                                    locationID: currentLocationID,
+                                    name: currentLocationName
                                 }
                             }
                         }
@@ -180,10 +186,10 @@ export default class Departments extends React.Component {
                         return value;
                     })
             
-                    this.setState({ isLoaded: true, isEditing: editingMode, departmentsFinal: editedDepartments, currentValues, successMessage: "You have updated this location successfully!" });
+                    this.setState({ isLoaded: true, isEditing: editingMode, departmentsFinal: editedDepartments, currentValues, success: "You have updated this location successfully!", successTitle: "Update successful" });
                 }
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while updating location" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while updating location", errorTitle: "Update unsuccessful" }))
         }
     }
 
@@ -195,14 +201,14 @@ export default class Departments extends React.Component {
             .then((deleted) => {
                 if ( deleted.status.code === "200" ) {
                     const deletedDepartment = this.state.departmentsFinal.filter(department => Number(department.id) !== index);
-                    this.setState({ isLoaded: true, departmentsFinal: deletedDepartment, successMessage: "You have deleted this department successfully!" });
+                    this.setState({ isLoaded: true, departmentsFinal: deletedDepartment, success: "You have deleted this department successfully!", successTitle: "Deletion successful" });
                 } else {
-                    this.setState({ isLoaded: true, errorMessage: "An error occurred while deleting department" });
+                    this.setState({ isLoaded: true, error: "An error occurred while deleting department", errorTitle: "Deletion unsuccessful" });
                 }
             
 
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while deleting department" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while deleting department", errorTitle: "Deletion unsuccessful" }))
     }
 
     handleCurrentDepartment = (event) => {
@@ -218,7 +224,7 @@ export default class Departments extends React.Component {
 
         this.setState({ isLoaded: false });
 
-        if ( this.state.currentLocationID != 0 && this.state.currentDepartment !== "" ) {
+        if ( this.state.currentLocationID !== 0 && this.state.currentDepartment !== "" ) {
             serverAPI("POST", "/department/insert.php", {name: this.state.currentDepartment, locationID: this.state.currentLocationID })
             .then((insertedDepartment) => {
                 if ( insertedDepartment.status.code === "200" ) {
@@ -230,47 +236,63 @@ export default class Departments extends React.Component {
                         currentDepartment: "",
                         isEditing: [...this.state.isEditing, { id: insertedDepartment.data.index, edit: false }],
                         currentValues: [...this.state.currentValues, { id: insertedDepartment.data.index, value: "" }],
-                        successMessage: "You have added this department successfully!",
+                        success: "You have added this department successfully!",
+                        successTitle: "Insert successful",
                         departmentsFinal: [ { id: insertedDepartment.data.index, name: this.state.currentDepartment, location: { id: this.state.currentLocationID, name: locationName}, employees: 0 }, ...this.state.departmentsFinal ]
                     })
                 }
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while adding department" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while adding department", errorTitle: "Insert unsuccessful" }))
         } else {
-            this.setState({ isLoaded: true, errorMessage: "Location and department must be selected!" });
+            this.setState({ isLoaded: true, error: "Location and department must be selected!", errorTitle: "Missing fields" });
         }
         
     }
 
     componentDidUpdate() {
-        if ( this.state.successMessage ) {
-            setTimeout(() => this.setState({ successMessage: "" }), 3000);
-        }
-
-        if ( this.state.errorMessage ) {
-            setTimeout(() => this.setState({ errorMessage: "" }), 3000);
-        }
+        if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
+        if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
     }
 
     render() {
-        const { employees, currentLocation, currentValues, locations, isLoaded, isEditing, departmentsFinal, currentDepartment, departments, successMessage, errorMessage } = this.state;
+        const { error, errorTitle, success, successTitle } = this.state;
+        const { currentValues, locations, isLoaded, isEditing, departmentsFinal, currentDepartment } = this.state;
 
-        console.log(this.state.currentValues);
         const Locations = locations.map((location, index) => (
             <option key={`${location}-${index}`} value={location.id}>{location.name}</option>
         ))
 
-        if (!isLoaded) {
-            return (
-                <div className="loading-spinner">
-                    <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        let successMessage = <div></div>;
+        if ( success ) {
+            successMessage = (
+            <div className="message message-success">
+                <div className="message--icon"><i className="fas fa-check-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ successTitle }</div>
+                    <div className="message--message">{ success }</div>
                 </div>
-            )
+            </div>)
+        }
+
+        let errorMessage = <div></div>;
+        if ( error ) {
+            errorMessage = (
+            <div className="message message-error">
+                <div className="message--icon"><i className="fas fa-exclamation-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ errorTitle }</div>
+                    <div className="message--message">{ error }</div>
+                </div>
+            </div>)
+        }
+
+        if (!isLoaded) {
+            return <LoadingSpinner />
         } else {
             return (
                 <div className="departments-container">
                     <div className="controls">
-                        <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="home-link">
+                        <Link to={{pathname:"/"}} className="home-link">
                                 <div className="home-link--icon"><i className="fas fa-chevron-left"></i></div>
                                 <div className="home-link--text">employees</div>
                         </Link>
@@ -289,22 +311,13 @@ export default class Departments extends React.Component {
                         </form>
                     </div>
 
-                    { successMessage && (
-                        <div className="departments__success">
-                            { successMessage }
-                        </div>
-                    ) }
-
-                    { errorMessage && (
-                        <div className="departments__error">
-                            { errorMessage }
-                        </div>
-                    ) }
+                    {successMessage}
+                    {errorMessage}
 
                     <div className="departments">
                         { departmentsFinal.map((department, index) => (
                             
-                            <div key={`department-${index}`}> 
+                            <div key={`department-${index}`} className="departments__department"> 
                                 { !isEditing.filter(x => x.id === department.id)[0].edit ? (
                                     <div>
                                         <div className="departments__department--name departments__department--name__name">{ department.name }</div>

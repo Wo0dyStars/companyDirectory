@@ -1,25 +1,27 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default class AddEmployee extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            errorLoading: null,
             isLoaded: false,
             firstName: "",
             lastName: "",
             email: "",
             jobTitle: "",
-            departmentID: 1,
+            departmentID: 0,
             expertise: "",
             phone: "",
             biography: "",
             avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg",
             error: "",
+            errorTitle: "",
             success: "",
+            successTitle: "",
             isComponentLoaded: false,
             Departments: [],
             expertiseList: [],
@@ -30,26 +32,38 @@ export default class AddEmployee extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleNewExpertise = this.handleNewExpertise.bind(this);
         this.handleDeleteExpertise = this.handleDeleteExpertise.bind(this);
-        this.runFormValidation = this.runFormValidation.bind(this);
+        this.addExpertise = this.addExpertise.bind(this);
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
+
         setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
 
         if (this.props.location.state) {
-            this.setState({ Departments: this.props.location.state.Departments, isLoaded: true });
+            const { Departments } = this.props.location.state;
+            this.setState({ Departments, isLoaded: true, departmentID: Departments[0].id });
         }
         
         else {
             serverAPI("GET", "department/get.php")
             .then(departments => {
                 const allDepartments = [];
-                for (let [key, department] of Object.entries(departments.data)) {
-                    allDepartments.push(department.name);
+                for (let department of Object.values(departments.data)) {
+                    allDepartments.push({ id: department.id, name: department.name });
                 }
-                this.setState({Departments: allDepartments, isLoaded: true});
+                
+                this.setState({Departments: allDepartments, isLoaded: true, departmentID: allDepartments[0].id});
             })
+            .catch(() => this.setState({ isLoaded: true, errorTitle: "Loading unsuccessful", error: "An error occurred while loading your data" }));
+        }
+    }
+
+    addExpertise = (event) => {
+        if ( this.state.expertiseList.length === 5 ) {
+            this.setState({ error: "You can provide maximum 5 expertise", errorTitle: "Maximum number of expertise reached" });
+        } else {
+            this.setState({expertiseList: [...this.state.expertiseList, ""]});
         }
     }
 
@@ -72,71 +86,87 @@ export default class AddEmployee extends React.Component {
         else { this.setState({ [event.target.name]: event.target.value }); }
     }
 
-    runFormValidation = () => {
-        const {firstName, lastName, email} = this.state;
-        if (( firstName.length > 0 && lastName.length > 0 && email.length > 0 && email.includes("@"))) {
-            return true;
-        }
-
-        return false;
-    }
-
     handleSubmit = (event) => {
         event.preventDefault();
 
+        const newState = this.state;
+        newState.expertiseList = newState.expertiseList.filter(exp => exp !== "");
+        newState.expertise = newState.expertiseList.join(",");
 
-        console.log(this.state);
-        console.log(this.state.expertiseList.join(", "));
-        // this.setState({ isLoaded: false });
-        // serverAPI("POST", "insert.php", JSON.stringify(this.state))
-        //     .then(() => this.setState(
-        //         { 
-        //             firstName: "", lastName: "", email: "", jobTitle: "", departmentID: 1, expertise: "", phone: "", biography: "", avatar: "",
-        //             success: "You have just added a new employee. Well done!",
-        //             isLoaded: true
-        //         }))
-        //     .catch((error) => this.setState({ error: "Something went wrong. Please try again!", isLoaded: true, errorLoading: error }));
+        this.setState({ isLoaded: false });
+        serverAPI("POST", "insert.php", JSON.stringify(newState))
+            .then((res) => {
+
+                this.setState(
+                { 
+                    firstName: "", lastName: "", email: "", jobTitle: "", departmentID: this.state.Departments[0].id, expertise: "", expertiseList: [], phone: "", biography: "", avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg",
+                    success: "You have just added a new employee. Well done!",
+                    successTitle: "Join successful",
+                    isLoaded: true
+                })})
+            .catch((error) => this.setState({ error: "Something went wrong. Please try again!", errorTitle: "Join unsuccessful", isLoaded: true, errorLoading: error }));
     }
 
     componentDidUpdate() {
-        setTimeout(() => this.setState({success: ""}), 7500);
+        if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
+        if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
     }
 
     render() {
-        const { firstName, lastName, email, jobTitle, expertiseList, expertise, departmentID, avatar, isAvatarURL, phone, biography, error, Departments, success, errorLoading, isLoaded, isComponentLoaded } = this.state;
+        const { error, errorTitle, success, successTitle } = this.state;
+        const { firstName, lastName, email, jobTitle, expertiseList, departmentID, avatar, isAvatarURL, phone, biography, Departments, isLoaded, isComponentLoaded } = this.state;
 
-        if ( errorLoading ) {
-            return <div>Error: {errorLoading.message}</div>
-        } else if (!isLoaded) {
-            return (
-                <div className="loading-spinner">
-                    <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                </div>)
+        let successMessage = <div></div>;
+        if ( success ) {
+            successMessage = (
+            <div className="message message-success">
+                <div className="message--icon"><i className="fas fa-check-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ successTitle }</div>
+                    <div className="message--message">{ success }</div>
+                </div>
+            </div>)
+        }
+
+        let errorMessage = <div></div>;
+        if ( error ) {
+            errorMessage = (
+            <div className="message message-error">
+                <div className="message--icon"><i className="fas fa-exclamation-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ errorTitle }</div>
+                    <div className="message--message">{ error }</div>
+                </div>
+            </div>)
+        }
+
+        if (!isLoaded) {
+            return <LoadingSpinner />
         } else {
+            
             // Display departments with indices given in database
             const departments = Departments.map((department, index) => (
-                <option key={index} value={index}>{ department }</option>
+                <option key={`department-${index}`} value={department.id}>{ department.name }</option>
             ))
 
             let newEmployeeForm = (
                 <form className="newEmployee-form" onSubmit={this.handleSubmit}>
                     <div className="newEmployee__navigation">
-                        <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="routerLink">
+                        <Link to={{pathname:"/"}} className="routerLink">
                             <div>
                                 <div className="routerLink--icon"><i className="fas fa-chevron-left"></i></div>
                                 <div>employees</div>
                             </div>
                         </Link>
-                        <button className="avatar-button done-button" type="submit" disabled={!this.runFormValidation()}>Done</button>
+                        <button className="avatar-button done-button" type="submit">Done</button>
                     </div>
 
-                    <div>
+                    <div className="preview">
                         <img className="preview-avatar" src={avatar} alt="Avatar"/>
                         <div className="preview-text">Your Default Avatar</div>
-                        <button className="avatar-button" type="button" onClick={() => this.setState({isAvatarURL: !isAvatarURL})}>{ isAvatarURL ? "Discard" : "Change" }</button>
+                        <button className="avatar-button" type="button" onClick={() => this.setState({isAvatarURL: !isAvatarURL, avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg"})}>{ isAvatarURL ? "Discard" : "Change" }</button>
                         {isAvatarURL && <input type="text" name="avatar" value={avatar} placeholder="Your avatar URL" onChange={this.handleChange} />}
                     </div>
-                    
 
                     <input type="text" name="firstName" value={firstName} placeholder="First name" required onChange={this.handleChange} />
                     <input type="text" name="lastName" value={lastName} placeholder="Last name" required onChange={this.handleChange} />
@@ -158,7 +188,7 @@ export default class AddEmployee extends React.Component {
                                 </div>
                             )) 
                         ) : <div></div>}
-                        <div className="exp-newexp" onClick={() => this.setState({expertiseList: [...expertiseList, ""]})}>
+                        <div className="exp-newexp" onClick={this.addExpertise}>
                             <div>
                                 <button className="exp-btn exp-btn--add" type="button">+</button>
                             </div>
@@ -171,30 +201,6 @@ export default class AddEmployee extends React.Component {
                 </form>
             )
 
-            let successMessage = <div></div>;
-            if ( success ) {
-                successMessage = (
-                <div className="success message">
-                    <div className="message--icon"><i className="fas fa-check-circle"></i></div>
-                    <div className="message--group">
-                        <div className="message--title">Adding new employee successful</div>
-                        <div className="message--message">{ success }</div>
-                    </div>
-                </div>)
-            }
-
-            let errorMessage = <div></div>;
-            if ( error ) {
-                errorMessage = (
-                <div className="error message">
-                    <div className="message--icon"><i className="fas fa-exclamation-circle"></i></div>
-                    <div className="message--group">
-                        <div className="message--title">Adding new employee error</div>
-                        <div className="message--message">{ error }</div>
-                    </div>
-                </div>)
-            }
-
             return (
                 <div className={isComponentLoaded ? "newEmployee" : "newEmployee entranceAddEmployee"}>
 
@@ -205,8 +211,8 @@ export default class AddEmployee extends React.Component {
 
                     {newEmployeeForm}
 
-                    {error && (<div>{ errorMessage }</div>)}
-                    {success && (<div>{ successMessage }</div>)}
+                    {successMessage}
+                    {errorMessage}
                 </div>
             )
         }

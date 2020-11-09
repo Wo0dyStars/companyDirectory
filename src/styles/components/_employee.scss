@@ -43,12 +43,12 @@
 			border-radius: 50%;
 			font-size: 3.4rem;
 			margin: 2rem;
+			margin-top: 4rem;
 			position: relative;
 			z-index: 2;
 			overflow: hidden;
 
 			@include respond(phone) {
-				margin-top: 4rem;
 				margin-bottom: 1rem;
 				width: 14rem;
 				height: 14rem;
@@ -141,7 +141,7 @@
 			width: 100%;
 			position: relative;
 			bottom: 0;
-			background-color: rgb(236, 206, 201);
+			background-color: rgba(24, 40, 72, .7);
 
 			@include respond(phone) {
 				font-size: .6rem;
@@ -158,6 +158,13 @@
 	background-color: #182848;
 	position: fixed;
 	z-index: 1000;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 1700px;
+
+	&__editing {
+		background-color: #56ab2f;
+	}
 
 	.cancel,
 	.edit,
@@ -166,6 +173,8 @@
 		background-color: transparent;
 		color: white;
 		margin: 1rem;
+		font-size: 1rem;
+		cursor: pointer;
 
 		&:focus {
 			outline: none;
@@ -194,7 +203,7 @@
 
 .employee-section-container {
 	width: 100%;
-	margin-top: 1rem;
+	margin-top: 3rem;
 
 	.employee-text {
 		position: relative;
@@ -207,7 +216,7 @@
 
 		&-background {
 			@include absoluteCenter;
-			color: $color-pink;
+			color: #182848;
 			bottom: -2rem;
 			font-size: 5rem;
 			opacity: 0.05;
@@ -223,7 +232,7 @@
 
 		&-header {
 			font-size: 2rem;
-			color: $color-pink;
+			color: #182848;
 			text-align: center;
 
 			@include respond(phone) {
@@ -233,7 +242,7 @@
 	}
 
 	.employee-horizontal {
-		background-color: rgba(203, 53, 107, .8);
+		background-color: #182848;
 		width: 12rem;
 		height: .4rem;
 		border: none;
@@ -271,10 +280,14 @@
 					@include flexCenter;
 					margin: 1rem;
 
-					font-size: 1.6rem;
+					font-size: 2.2rem;
 					background-color: white;
-					color: $color-pink;
+					color: #182848;
 					padding: .5rem;
+
+					@include respond(phone) {
+						font-size: 1.6rem;
+					}
 				}
 
 				.field {
@@ -288,43 +301,33 @@
 			}
 
 			label {
-				background-color: $color-pink-light;
 				padding: 1rem;
-				color: white;
-				width: 50%;
-				text-transform: uppercase;
-				border-top-left-radius: 1.4rem;
-				border-bottom-left-radius: 1.4rem;
+				color: black;
+				width: 100%;
+				text-transform: capitalize;
+				font-weight: 500;
+				font-size: 1.5rem;
 
 				@include respond(phone) {
-					width: 100%;
 					padding: .5rem;
-					text-transform: capitalize;
-					border-radius: 0;
+					font-size: 1rem;
 					text-align: left;
 					background-color: white;
-					color: black;
-					font-weight: 500;
 				}
 			}
 
 			input,
 			textarea {
-				width: 50%;
-				border: 1px solid rgba(203, 53, 107, .2);
-				text-align: center;
+				width: 100%;
+				padding: 1rem;
+				border: none;
+				text-align: left;
 				font-size: 1.1rem;
 				color: rgba(0, 0, 0, 8);
-				border-top-right-radius: 1.4rem;
-				border-bottom-right-radius: 1.4rem;
 				resize: none;
 
 				@include respond(phone) {
-					text-align: left;
-					width: 100%;
 					padding: .5rem;
-					border-radius: 0;
-					border: none;
 
 					color: rgba(0, 0, 0, .4);
 				}
@@ -335,26 +338,36 @@
 			}
 
 			.biography {
-				flex-direction: column;
-				justify-content: space-around;
-				align-items: center;
 				height: 100%;
-				position: relative;
-				overflow: hidden;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+
+				&__head {
+					display: grid !important;
+					grid-template-columns: 0.3fr 1fr !important;
+					padding: 0 !important;
+					margin: 0 !important;
+					width: 100%;
+
+					i {
+						@include flexCenter;
+					}
+				}
+
+				&__field {
+					width: 100%;
+					display: grid;
+					grid-template-columns: 0.3fr 1fr;
+				}
 
 				label {
 					width: 100%;
-					padding: 1rem 0;
-					text-align: center;
-					border-bottom-left-radius: 0;
-					border-top-right-radius: 1.4rem;
-					background-color: rgba(203, 53, 107, .5);
+					padding: 1rem;
+					text-align: left;
 
 					@include respond(phone) {
-						padding-left: 1rem;
-						border-radius: 0;
-						text-align: left;
-						background-color: white;
+						padding: .5rem;
 						color: rgba(0, 0, 0, .6);
 						border: none;
 					}
@@ -363,20 +376,17 @@
 				textarea {
 					width: 100%;
 					min-height: 7rem;
-					border-top-right-radius: 0;
-					border-bottom-right-radius: 0;
-					padding: 0;
+					padding: 0 1rem;
+					margin: 0 .8rem;
 					color: rgba(0, 0, 0, .7);
-					font-family: 'Lobster', cursive;
 					letter-spacing: .1rem;
 					border: none;
-					border-bottom: 1px solid rgba(0, 0, 0, .1);
-					background-color: transparent;
 					padding: 1rem 0;
 					z-index: 1;
 
 					@include respond(phone) {
 						border: none;
+						margin: 0 .6rem;
 					}
 				}
 			}

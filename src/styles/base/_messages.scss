@@ -6,7 +6,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	position: fixed;
-	top: 0;
+	bottom: .5rem;
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: 4000;
@@ -15,6 +15,14 @@
 	@include respond(phone) {
 		width: 95%;
 		font-size: .7rem;
+	}
+
+	&-success {
+		background-color: $color-success;
+	}
+
+	&-error {
+		background-color: $color-error;
 	}
 
 	&--icon {
@@ -34,14 +42,6 @@
 			font-size: .9rem;
 		}
 	}
-}
-
-.success {
-	background-color: $color-success;
-}
-
-.error {
-	background-color: $color-error;
 }
 
 .routerLink {

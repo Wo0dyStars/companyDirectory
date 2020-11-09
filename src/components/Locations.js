@@ -1,7 +1,7 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
-import Swipeable from "./Swipeable";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default class Locations extends React.Component {
 
@@ -16,8 +16,10 @@ export default class Locations extends React.Component {
             currentValues: [],
             departments: [],
             isLoaded: false,
-            successMessage: "",
-            errorMessage: ""
+            error: "",
+            errorTitle: "",
+            success: "",
+            successTitle: ""
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -56,9 +58,9 @@ export default class Locations extends React.Component {
 
                         this.setState({ locations, isLoaded: true, isEditing, currentValues, departments: departmentsForLocations });
                     })
-                    .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading locations" }))
+                    .catch(() => this.setState({ isLoaded: true, error: "An error occurred while loading locations", errorTitle: "Loading unsuccessful" }))
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while loading locations" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while loading locations", errorTitle: "Loading unsuccessful" }))
     }
 
     handleChange = (event) => {
@@ -146,10 +148,10 @@ export default class Locations extends React.Component {
                         return value;
                     })
             
-                    this.setState({ isLoaded: true, isEditing: editingMode, locations: editedLocations, currentValues, successMessage: "You have updated this location successfully!" });
+                    this.setState({ isLoaded: true, isEditing: editingMode, locations: editedLocations, currentValues, success: "You have updated this location successfully!", successTitle: "Update successful" });
                 }
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while updating location" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while updating location", errorTitle: "Update unsuccessful" }))
     }
 
     handleDelete = (event) => {
@@ -159,10 +161,10 @@ export default class Locations extends React.Component {
         serverAPI("POST", "/location/delete.php", {id: index})
             .then((res) => {
                 const deletedLocation = this.state.locations.filter(location => Number(location.id) !== index);
-                this.setState({ isLoaded: true, locations: deletedLocation, successMessage: "You have deleted this location successfully!" });
+                this.setState({ isLoaded: true, locations: deletedLocation, success: "You have deleted this location successfully!", successTitle: "Deletion successful" });
 
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while deleting location" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while deleting location", errorTitle: "Deletion unsuccessful" }))
     }
 
     handleCurrentLocation = (event) => {
@@ -185,60 +187,69 @@ export default class Locations extends React.Component {
                             isEditing: [...this.state.isEditing, { id: insertedLocation.data.index, edit: false }], 
                             currentValues: [...this.state.currentValues, { id: insertedLocation.data.index, value: "" }],
                             departments: [ ...this.state.departments, { id: insertedLocation.data.index, departments: [] } ],
-                            successMessage: "You have added this location successfully!"
+                            success: "You have added this location successfully!",
+                            successTitle: "Insert successful"
                     });
                 }
             })
-            .catch(() => this.setState({ isLoaded: true, errorMessage: "An error occurred while adding location" }))
+            .catch(() => this.setState({ isLoaded: true, error: "An error occurred while adding location", errorTitle: "Insert unsuccessful" }))
     }
 
     componentDidUpdate() {
-        if ( this.state.successMessage ) {
-            setTimeout(() => this.setState({ successMessage: "" }), 3000);
-        }
-
-        if ( this.state.errorMessage ) {
-            setTimeout(() => this.setState({ errorMessage: "" }), 3000);
-        }
+        if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
+        if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
     }
 
     render() {
-        const { employees, currentLocation, currentValues, locations, isLoaded, isEditing, departments, successMessage, errorMessage } = this.state;
+        const { error, errorTitle, success, successTitle } = this.state;
+        const { currentLocation, currentValues, locations, isLoaded, isEditing, departments } = this.state;
         
-        if (!isLoaded) {
-            return (
-                <div className="loading-spinner">
-                    <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        let successMessage = <div></div>;
+        if ( success ) {
+            successMessage = (
+            <div className="message message-success">
+                <div className="message--icon"><i className="fas fa-check-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ successTitle }</div>
+                    <div className="message--message">{ success }</div>
                 </div>
-            )
+            </div>)
+        }
+
+        let errorMessage = <div></div>;
+        if ( error ) {
+            errorMessage = (
+            <div className="message message-error">
+                <div className="message--icon"><i className="fas fa-exclamation-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ errorTitle }</div>
+                    <div className="message--message">{ error }</div>
+                </div>
+            </div>)
+        }
+
+        if (!isLoaded) {
+            return <LoadingSpinner />
         } else {
             // Show locations
             return (
                 <div className="locations-container">
                     <div className="controls">
-                        <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="home-link">
+                        <Link to={{pathname:"/"}} className="home-link">
                                 <div className="home-link--icon"><i className="fas fa-chevron-left"></i></div>
                                 <div className="home-link--text">employees</div>
                         </Link>
                     </div>
                     <div className="locations__add">
                         <form onSubmit={this.handleSubmit}>
-                            <input type="text" value={currentLocation} placeholder="Location name" onChange={this.handleCurrentLocation} />
+                            <input type="text" value={currentLocation} placeholder="Location name" required onChange={this.handleCurrentLocation} />
                             <button type="submit"><i className="fas fa-plus-square"></i></button>
                         </form>
                     </div>
 
-                    { successMessage && (
-                        <div className="locations__success">
-                            { successMessage }
-                        </div>
-                    ) }
+                    {successMessage}
+                    {errorMessage}
 
-                    { errorMessage && (
-                        <div className="locations__error">
-                            { errorMessage }
-                        </div>
-                    ) }
                     <div className="locations">
 
                         { locations.map((location, index) => (
@@ -263,7 +274,10 @@ export default class Locations extends React.Component {
                                                         </div>
                                                     )
                                                 }
+
+                                                return <div></div>;
                                             }) }
+                                            
                                         </div>
                                         <div className="locations__location--controls">
                                             <div>

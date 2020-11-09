@@ -1,18 +1,21 @@
 import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 class Employee extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            error: null,
+            error: "",
+            errorTitle: "",
+            success: "",
+            successTitle: "",
             isLoaded: false,
             employee: {},
             editEmployee: {},
             isEditing: false,
-            successOnSave: "",
             isComponentLoaded: false
         }
 
@@ -23,11 +26,9 @@ class Employee extends React.Component {
         this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    componentWillMount() {
-        window.scrollTo(0, 0);
-    }
-
     componentDidMount() {
+        window.scrollTo(0, 0);
+
         this.setState({
             employee: this.props.location.state.employee, 
             editEmployee: this.props.location.state.employee,
@@ -61,8 +62,8 @@ class Employee extends React.Component {
     handleSave = (event) => {
         this.setState({ isLoaded: false });
         serverAPI("POST", "update.php", JSON.stringify(this.state.editEmployee))
-            .then(() => this.setState({ successOnSave: "You have just saved your updated values.", isLoaded: true }))
-            .catch((error) => this.setState({ isLoaded: true, error }));
+            .then(() => this.setState({ success: "You have just saved your updated values.", successTitle: "Save successful", isLoaded: true }))
+            .catch(() => this.setState({ isLoaded: true, errorTitle: "Save unsuccessful", error: "An error occurred while saving your values" }));
 
         this.toggleEdit();
     }
@@ -72,31 +73,39 @@ class Employee extends React.Component {
     }
 
     componentDidUpdate() {
-        setTimeout(() => this.setState({successOnSave: ""}), 7500);
+        if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
+        if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
     }
 
     render() {
-        const { error, isLoaded, employee, editEmployee, isEditing, successOnSave, isComponentLoaded } = this.state;
+        const { error, errorTitle, success, successTitle, isLoaded, employee, editEmployee, isEditing, isComponentLoaded } = this.state;
 
         let successMessage = <div></div>;
-        if ( successOnSave ) {
+        if ( success ) { 
             successMessage = (
-            <div className="success message">
+            <div className="message message-success">
                 <div className="message--icon"><i className="fas fa-check-circle"></i></div>
                 <div className="message--group">
-                    <div className="message--title">Editing successful</div>
-                    <div className="message--message">{ successOnSave }</div>
+                    <div className="message--title">{ successTitle }</div>
+                    <div className="message--message">{ success }</div>
                 </div>
             </div>)
         }
 
+        let errorMessage = <div></div>;
         if ( error ) {
-            return <div>Error: {error.message}</div>
-        } else if (!isLoaded) {
-            return (
-                <div className="loading-spinner">
-                    <div className="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                </div>)
+            errorMessage = (
+            <div className="message message-error">
+                <div className="message--icon"><i className="fas fa-exclamation-circle"></i></div>
+                <div className="message--group">
+                    <div className="message--title">{ errorTitle }</div>
+                    <div className="message--message">{ error }</div>
+                </div>
+            </div>)
+        }
+
+        if (!isLoaded) {
+            return <LoadingSpinner />
         } else {
             const isAvailable = employee.isAvailable ? "In Office" : "On Vacation";
             const skills = editEmployee.expertise.split(",");
@@ -109,12 +118,12 @@ class Employee extends React.Component {
 
             let fields = {
                 email: <input type="text" defaultValue={ editEmployee.email } readOnly />,
-                phone: <input type="text" defaultValue={ editEmployee.phone } readOnly />,
+                phone: <input type="text" defaultValue={ editEmployee.phone ? editEmployee.phone : "Please provide"} readOnly />,
                 name: <input type="text" defaultValue={ editEmployee.firstName + " " + editEmployee.lastName } readOnly />,
-                biography: <textarea defaultValue={ editEmployee.biography } readOnly></textarea>,
-                jobTitle: <input type="text" defaultValue={ editEmployee.jobTitle } readOnly />,
-                experience: <input type="text" defaultValue={ editEmployee.experience } readOnly />,
-                expertise: <input type="text" defaultValue={ editEmployee.expertise } readOnly />,
+                biography: <textarea defaultValue={ editEmployee.biography ? editEmployee.biography : "Please provide" } readOnly></textarea>,
+                jobTitle: <input type="text" defaultValue={ editEmployee.jobTitle ? editEmployee.jobTitle : "Please provide"} readOnly />,
+                experience: <input type="text" defaultValue={ editEmployee.experience ? editEmployee.experience : "Please provide" } readOnly />,
+                expertise: <input type="text" defaultValue={ editEmployee.expertise ? editEmployee.expertise : "Please provide"} readOnly />,
                 location: <input type="text" defaultValue={ editEmployee.location } readOnly />
             }
 
@@ -123,22 +132,22 @@ class Employee extends React.Component {
                 fields.phone = <input type="text" name="phone" placeholder={ editEmployee.phone } onChange={this.handleChange} />;
                 fields.name = <input type="text" name="name" placeholder={ editEmployee.firstName + " " + editEmployee.lastName } onChange={this.handleChangeName} />;
                 fields.biography = <textarea name="biography" placeholder={ editEmployee.biography } onChange={this.handleChange}></textarea>;
-                fields.jobTitle = <input type="text" name="jobTitle" placeholder={ editEmployee.jobTitle } onChange={this.handleChange} />;
-                fields.experience = <input type="text" name="experience" placeholder={ editEmployee.experience } onChange={this.handleChange} />;
-                fields.expertise = <input type="text" maxLength="50" name="expertise" placeholder={ editEmployee.expertise } onChange={this.handleChange} />;
+                fields.jobTitle = <input type="text" name="jobTitle" placeholder={ editEmployee.jobTitle} onChange={this.handleChange} />;
+                fields.experience = <input type="text" name="experience" placeholder={ editEmployee.experience} onChange={this.handleChange} />;
+                fields.expertise = <input type="text" maxLength="50" name="expertise" placeholder={ editEmployee.expertise} onChange={this.handleChange} />;
             }
 
             return (
                 <div className={isComponentLoaded ? "employee_container" : "employee_container entranceEmployee"}>
 
                     <div className="employee__header">
-                        <div className="controls">
+                        <div className={isEditing ? "controls controls__editing" : "controls"}>
                             { isEditing ? (
                                 <div>
                                     <button className="cancel" type="button" onClick={this.handleCancel}>Cancel</button>
                                 </div> 
                             ) : (
-                                <Link to={{pathname:"/", state: {employees: this.props.location.state.employees, typing: this.props.location.state.typing, searched: this.props.location.state.searched, Departments: this.props.location.state.Departments} }} className="home-link">
+                                <Link to={{pathname:"/" }} className="home-link">
                                     
                                         <div className="home-link--icon"><i className="fas fa-chevron-left"></i></div>
                                         <div className="home-link--text">employees</div>
@@ -181,6 +190,7 @@ class Employee extends React.Component {
                     </div>
 
                     {successMessage}
+                    {errorMessage}
 
                     <article className="employee-section-container">
                         
@@ -202,8 +212,14 @@ class Employee extends React.Component {
                                     </div>
 
                                     <div className="biography">
-                                        <label htmlFor="biography">Biography</label>
-                                        { fields.biography }
+                                        <div className="icon biography__head">
+                                            <i className="fas fa-address-book"></i>
+                                            <label htmlFor="biography">Biography</label>
+                                        </div>
+                                        <div className="biography__field">
+                                            <div></div>
+                                            { fields.biography }
+                                        </div>
                                     </div>
                                 </div>
                             </header>

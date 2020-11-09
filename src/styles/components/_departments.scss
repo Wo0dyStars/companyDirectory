@@ -1,26 +1,22 @@
 .departments-container {
 	width: 100%;
+	background: linear-gradient(to right, rgba(214, 109, 117, .1), rgba(226, 149, 135, .1));
 
 	.departments {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+		grid-auto-rows: 15rem;
+		grid-column-gap: 2rem;
+		width: 90%;
+		margin: 0 auto;
 		margin-top: 3rem;
 
-		&__success {
-			background-color: green;
-			margin: 2rem 0;
-			color: white;
-			text-align: center;
-			padding: 1rem;
-		}
-
-		&__error {
-			background-color: red;
-			margin: 2rem 0;
-			color: white;
-			text-align: center;
-			padding: 1rem;
+		@include respond(phone) {
+			display: flex;
+			flex-direction: column;
+			width: 90%;
+			margin: 0 auto;
+			margin-top: 3rem;
 		}
 
 		&__add {
@@ -33,12 +29,22 @@
 					display: flex;
 					justify-content: center;
 
+					@include respond(phone) {
+						flex-direction: column;
+						align-items: center;
+						margin: 0 auto;
+					}
+
 					input,
 					select {
 						padding: .5rem;
-						width: 100%;
 						border: 1px solid rgba(0, 0, 0, .1);
 						border-right: none;
+						width: 20%;
+
+						@include respond(phone) {
+							width: 80%;
+						}
 
 						&:focus {
 							outline: none;
@@ -75,6 +81,15 @@
 
 		&__department {
 			width: 100%;
+			transition: all .4s ease;
+
+			&:hover {
+				transform: translateY(-1rem);
+
+				@include respond(phone) {
+					transform: translateY(0);
+				}
+			}
 
 			& > div {
 				width: 100%;
@@ -87,6 +102,8 @@
 				border-bottom: 1px solid rgba(0, 0, 0, .1);
 				background-color: rgba(24, 40, 72, .8);
 				color: white;
+				border-top-left-radius: 1rem;
+				border-top-right-radius: 1rem;
 
 				&__name {
 					font-size: 1.2rem;
@@ -100,8 +117,7 @@
 					padding: .4rem;
 				}
 
-				input,
-				select {
+				input {
 					text-align: center;
 					width: 100%;
 					padding: .4rem;
@@ -119,19 +135,33 @@
 						outline: none;
 					}
 				}
+
+				select {
+					border-bottom: 1px solid rgba(0, 0, 0, .1);
+					font-size: 1.2rem;
+					color: rgba(0, 0, 0, .6);
+					width: 100%;
+					border: none;
+					background-color: white;
+
+					&:focus {
+						outline: none;
+					}
+				}
 			}
 
 			&--location {
 				width: 100%;
-				margin-bottom: .4rem;
+				padding-bottom: .4rem;
 				color: rgba(0, 0, 0, .6);
 				text-align: center;
+				background-color: white;
 			}
 
 			&--employees {
 				text-align: center;
 				padding: 1rem 0;
-				background-color: rgba(0, 0, 0, .03);
+				background-color: white;
 
 				&__title {
 					color: rgba(0, 0, 0, .5);
@@ -147,6 +177,7 @@
 				margin-bottom: 1rem;
 				display: flex;
 				justify-content: space-between;
+				background-color: rgba(255, 255, 255, .7);
 				border-bottom: 3px dashed rgba(0, 0, 0, .04);
 
 				div {
@@ -157,8 +188,8 @@
 					border: none;
 					padding: .4rem;
 					margin-right: .2rem;
-					color: rgba(44, 5, 77, 0.8);
-					font-size: 1.2rem;
+					color: #3a7bd5;
+					font-size: 1rem;
 					border-radius: .2rem;
 					background-color: transparent;
 					cursor: pointer;
@@ -169,7 +200,7 @@
 				}
 
 				i {
-					font-size: 1.5rem;
+					font-size: 1.3rem;
 				}
 
 				.cancel + i {
