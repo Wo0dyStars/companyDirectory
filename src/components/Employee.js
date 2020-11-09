@@ -34,7 +34,7 @@ class Employee extends React.Component {
             editEmployee: this.props.location.state.employee,
             isLoaded: true });
         
-        setTimeout(() => this.setState({ isComponentLoaded: true }), 2000);
+        setTimeout(() => { this.setState({ isComponentLoaded: true }); } , 2000);
     }
 
     handleChange = (event) => {

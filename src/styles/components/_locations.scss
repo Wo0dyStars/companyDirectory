@@ -14,7 +14,7 @@
 		@include respond(phone) {
 			display: flex;
 			flex-direction: column;
-			width: 90%;
+			width: 100%;
 			margin: 0 auto;
 			margin-top: 3rem;
 		}
@@ -88,6 +88,10 @@
 				border-top-left-radius: 1rem;
 				border-top-right-radius: 1rem;
 
+				@include respond(phone) {
+					border-radius: 0;
+				}
+
 				&__name {
 					font-size: 1.2rem;
 					font-weight: 700;
@@ -122,7 +126,9 @@
 			&--departments {
 				text-align: center;
 				padding: 1rem 0;
-				background-color: white;
+				background: url("../../images/department.jpg"), rgba(255, 255, 255, .85);
+				background-position: center center;
+				background-blend-mode: screen;
 				min-height: 10rem;
 
 				@include respond(phone) {
@@ -143,7 +149,6 @@
 				margin-bottom: 1rem;
 				display: flex;
 				justify-content: space-between;
-				border-bottom: 3px dashed rgba(0, 0, 0, .04);
 				background-color: rgba(255, 255, 255, .7);
 
 				div {

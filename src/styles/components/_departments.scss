@@ -1,5 +1,6 @@
 .departments-container {
 	width: 100%;
+	// background: linear-gradient(to right, rgba(214, 109, 117, .1), rgba(226, 149, 135, .1));
 	background: linear-gradient(to right, rgba(214, 109, 117, .1), rgba(226, 149, 135, .1));
 
 	.departments {
@@ -14,7 +15,7 @@
 		@include respond(phone) {
 			display: flex;
 			flex-direction: column;
-			width: 90%;
+			width: 100%;
 			margin: 0 auto;
 			margin-top: 3rem;
 		}
@@ -105,6 +106,10 @@
 				border-top-left-radius: 1rem;
 				border-top-right-radius: 1rem;
 
+				@include respond(phone) {
+					border-radius: 0;
+				}
+
 				&__name {
 					font-size: 1.2rem;
 					font-weight: 700;
@@ -177,7 +182,6 @@
 				display: flex;
 				justify-content: space-between;
 				background-color: rgba(255, 255, 255, .7);
-				border-bottom: 3px dashed rgba(0, 0, 0, .04);
 
 				div {
 					@include flexCenter;
