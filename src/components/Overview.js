@@ -21,6 +21,7 @@ export default class Overview extends React.Component {
             isArrowVisible: false,
             Departments: [],
             typing: "",
+            Locations: [],
             isModalOpen: false,
             isSearching: false
         }
@@ -46,12 +47,23 @@ export default class Overview extends React.Component {
                 .then(departments => {
                     const allDepartments = [];
                     for (let department of Object.values(departments.data)) {
-                        allDepartments.push({ id: department.id, name: department.name });
+                        allDepartments.push({ id: department.id, name: department.name, locationID: department.locationID });
                     }
 
                     this.setState({Departments: allDepartments});
+
+                    serverAPI("GET", "location/get.php")
+                        .then(locations => {
+                            const allLocations = [];
+                            for (let location of Object.values(locations.data)) {
+                                allLocations.push({ id: location.id, name: location.name });
+                            }
+
+                            this.setState({ Locations: allLocations });
+                        })
+                        .catch(() => this.setState({ isLoaded: true, errorTitle: "Loading unsuccessful", error: "An error occurred while loading locations" }));
                 })
-                .catch(() => this.setState({ isLoaded: true, errorTitle: "Loading unsuccessful", error: "An error occurred while loading your employees" }));
+                .catch(() => this.setState({ isLoaded: true, errorTitle: "Loading unsuccessful", error: "An error occurred while loading departments" }));
 
             serverAPI("GET", "get.php?orderby=p.firstName")
                 .then(employees => {
@@ -73,13 +85,13 @@ export default class Overview extends React.Component {
     }
 
     onOpenProfile = (employeeID) => {
-        const {employees, typing, searchedEmployees, Departments} = this.state;
+        const {employees, Departments, Locations} = this.state;
         const employee = employees.filter(employee => employee.id === employeeID)[0];
         
         this.props.history.push({
             pathname:`/employee/${employeeID}`,
             state: {
-                employee, employees, typing, searched: searchedEmployees, Departments
+                employee, Departments, Locations
             }
         });
     }
@@ -120,6 +132,20 @@ export default class Overview extends React.Component {
         });
         
         this.setState({ searchedEmployees: filteredEmployees });
+    }
+
+    getDepartment = (departmentID) => {
+        const foundDepartment = this.state.Departments.filter(department => department.id === departmentID)[0];
+
+        if ( !foundDepartment ) return "no department";
+        else return foundDepartment.name;
+    }
+
+    getLocation = (locationID) => {
+        const foundLocation = this.state.Locations.filter(location => location.id === locationID)[0];
+
+        if ( !foundLocation ) return "no location";
+        else return foundLocation.name;
     }
 
     componentDidUpdate() {
@@ -274,10 +300,10 @@ export default class Overview extends React.Component {
                                                 </div>
                                                 
                                                 <div className="employee-table__employee--department"> 
-                                                    { employee.department }
+                                                    { this.getDepartment(employee.departmentID) }
                                                 </div>
                                                 <div className="employee-table__employee--location"> 
-                                                    { employee.location }
+                                                    { this.getLocation(employee.locationID) }
                                                 </div>
                                             </div>
                 
