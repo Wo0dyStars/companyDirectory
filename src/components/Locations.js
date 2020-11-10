@@ -157,14 +157,20 @@ export default class Locations extends React.Component {
     handleDelete = (event) => {
         const index = Number(event.target.name.split("-")[1]);
         this.setState({ isLoaded: false });
-        
-        serverAPI("POST", "/location/delete.php", {id: index})
-            .then((res) => {
+
+        const currentLocation = this.state.departments.filter(department => Number(department.id) === index)[0];
+        if ( currentLocation.departments.length > 0 ) {
+            this.setState({ isLoaded: true, error: "This location has departments, which have employees. Please transfer departments first before you delete.", errorTitle: "Deletion rejected" });
+        } else {
+            serverAPI("POST", "/location/delete.php", {id: index})
+            .then(() => {
                 const deletedLocation = this.state.locations.filter(location => Number(location.id) !== index);
                 this.setState({ isLoaded: true, locations: deletedLocation, success: "You have deleted this location successfully!", successTitle: "Deletion successful" });
 
             })
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while deleting location", errorTitle: "Deletion unsuccessful" }))
+        }
+        
     }
 
     handleCurrentLocation = (event) => {
@@ -256,7 +262,7 @@ export default class Locations extends React.Component {
                             <div key={`location-${index}`} className="locations__location">
                                 { !isEditing.filter(x => x.id === location.id)[0].edit ?
                                 (
-                                    <div>
+                                    <div key={`location_-${index}`}>
                                         <div className="locations__location--name">
                                             <div className="locations__location--name__name">{ location.name }</div>
                                         </div>
@@ -294,7 +300,7 @@ export default class Locations extends React.Component {
                                     </div>
                                 ) :
                                 (   
-                                    <div>
+                                    <div key={`location__-${index}`}>
                                         <div className="locations__location--name">
                                             <input type="text" name={`location-${location.id}`} placeholder={location.name} value={currentValues.filter(x => x.id === location.id)[0].value} onChange={this.handleChange} />
                                         </div>

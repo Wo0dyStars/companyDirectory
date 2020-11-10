@@ -44,8 +44,8 @@ export default class Departments extends React.Component {
                             const isEditing = [];
                             const currentValues = [];
                             for (let i = 0; i < departments.data.length; i++) {
-                                const employeeList = employees.data.filter(employee => employee.department === departments.data[i].name);
-                                
+                                const employeeList = employees.data.filter(employee => employee.departmentID === departments.data[i].id);
+
                                 isEditing.push({ id: departments.data[i].id, edit: false });
                                 currentValues.push({ id: departments.data[i].id, locationID: "select", value: "" });
                                 const locationNameRaw = locations.data.filter(l => l.id === departments.data[i].locationID)[0];
@@ -196,8 +196,12 @@ export default class Departments extends React.Component {
     handleDelete = (event) => {
         const index = Number(event.target.name.split("-")[1]);
         this.setState({ isLoaded: false });
-        
-        serverAPI("POST", "/department/delete.php", {id: index})
+       
+        const currentDepartment = this.state.departmentsFinal.filter(department => Number(department.id) === index)[0];
+        if ( currentDepartment.employees > 0 ) {
+            this.setState({ isLoaded: true, error: "This department has employees. Please transfer them first in order to delete.", errorTitle: "Deletion rejected" });
+        } else {
+            serverAPI("POST", "/department/delete.php", {id: index})
             .then((deleted) => {
                 if ( deleted.status.code === "200" ) {
                     const deletedDepartment = this.state.departmentsFinal.filter(department => Number(department.id) !== index);
@@ -209,6 +213,8 @@ export default class Departments extends React.Component {
 
             })
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while deleting department", errorTitle: "Deletion unsuccessful" }))
+        }
+        
     }
 
     handleCurrentDepartment = (event) => {
