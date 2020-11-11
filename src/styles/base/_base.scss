@@ -35,3 +35,68 @@ option {
 	text-align: center;
 	color: #fff;
 }
+
+.Swipe {
+	&__wrapper {
+		position: relative;
+		transition: max-height 0.5s ease;
+		max-height: 1000px;
+		transform-origin: top;
+		overflow: hidden;
+		width: 100%;
+		cursor: pointer;
+	}
+
+	&__background {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		align-items: center;
+		font-size: 2rem;
+
+		padding-right: 16px;
+		color: white;
+		background-color: $color-cancel;
+		box-sizing: border-box;
+	}
+
+	&__item {
+		width: 100%;
+		align-items: center;
+		box-sizing: border-box;
+		background-color: #fff;
+		height: 100%;
+		display: flex;
+
+		&--bouncing {
+			transition: transform 0.2s ease-out;
+		}
+	}
+}
+
+.delete-icon {
+	height: 10rem;
+	padding-right: 0.5rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	z-index: 1;
+}
+
+.somanydepartments {
+	padding: 2rem;
+}
+
+aside {
+	margin: 2rem auto;
+	width: 80%;
+
+	@include respond(phone) {
+		width: 100%;
+	}
+}

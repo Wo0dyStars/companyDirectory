@@ -1,6 +1,6 @@
 import React from "react";
 
-class SwipeableListItem extends React.Component {
+class Swiping extends React.Component {
   // DOM Refs
   listElement;
   wrapper;
@@ -32,6 +32,7 @@ class SwipeableListItem extends React.Component {
     this.onDragEnd = this.onDragEnd.bind(this);
     this.updatePosition = this.updatePosition.bind(this);
     this.onClicked = this.onClicked.bind(this);
+    this.clickedDelete = this.clickedDelete.bind(this);
 
     this.onSwiped = this.onSwiped.bind(this);
   }
@@ -61,7 +62,7 @@ class SwipeableListItem extends React.Component {
     this.dragged = true;
     this.moved = false;
     this.dragStartX = clientX;
-    this.listElement.className = "Item";
+    this.listElement.className = "Swipe__item";
     this.startTime = Date.now();
     requestAnimationFrame(this.updatePosition);
   }
@@ -80,20 +81,24 @@ class SwipeableListItem extends React.Component {
     if (this.dragged) {
       this.dragged = false;
 
-      const threshold = this.props.threshold || 0.5;
+      const threshold = this.props.threshold || 0.3;
 
       if (this.left < this.listElement.offsetWidth * threshold * -1) {
-        this.left = -this.listElement.offsetWidth * 2;
-        this.wrapper.style.maxHeight = 0;
-        this.onSwiped();
+        this.left = -75;
       } else {
         this.left = 0;
       }
 
       if ( this.listElement ) {
-        this.listElement.className = "BouncingListItem";
+        this.listElement.className = "Swipe__item Swipe__item--bouncing";
         this.listElement.style.transform = `translateX(${this.left}px)`;
       }
+    }
+  }
+
+  clickedDelete = (event) => {
+    if (!this.dragged) {
+      this.onSwiped();
     }
   }
 
@@ -137,22 +142,27 @@ class SwipeableListItem extends React.Component {
 
   onClicked() {    
     if ( !this.moved ) {
-        this.props.onClick(this.listElement.getAttribute("name")); 
+        if ( this.props.onClick ) {
+          this.props.onClick(this.listElement.getAttribute("name")); 
+        }
     }
   }
 
   onSwiped() {
       if ( this.moved ) {
-        this.props.onDelete(this.listElement.getAttribute("name")); 
+        const isDeleted = this.props.onDelete(this.listElement.getAttribute("name")); 
+        if ( isDeleted ) {
+          this.wrapper.style.maxHeight = 0;
+        }
       }
   }
 
   render() {
     return (
       <>
-        <div className="Wrapper" ref={div => (this.wrapper = div)}>
-          <div ref={div => (this.background = div)} className="Background">
-            <i className="fas fa-trash-alt"></i>
+        <div className="Swipe__wrapper" ref={div => (this.wrapper = div)} onMouseDown={this.clickedDelete}>
+          <div ref={div => (this.background = div)} className="Swipe__background" >
+            <div className="delete-icon"><i className="fas fa-trash-alt"></i></div>
           </div>
           <div
             name={this.props.name}
@@ -160,7 +170,7 @@ class SwipeableListItem extends React.Component {
             ref={div => (this.listElement = div)}
             onMouseDown={this.onDragStartMouse}
             onTouchStart={this.onDragStartTouch}
-            className="Item"
+            className="Swipe__item"
           >
             {this.props.children}
           </div>
@@ -170,4 +180,4 @@ class SwipeableListItem extends React.Component {
   }
 }
 
-export default SwipeableListItem;
+export default Swiping;

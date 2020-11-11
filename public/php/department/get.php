@@ -9,7 +9,7 @@
 	include("../queryHandler/unconnected.php");
 
 	$query = "
-        SELECT name
+        SELECT id, name, locationID
         FROM department
 	";
 

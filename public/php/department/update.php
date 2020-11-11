@@ -8,18 +8,26 @@
 	
 	include("../queryHandler/unconnected.php");
 
-	$query = "UPDATE department 
-              SET `name` = ?, `locationID` = ?
-              WHERE id = ?";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $_POST = json_decode(file_get_contents("php://input"), true);
+        $trimmedName = trim( $_POST["name"] );
+        $trimmedID = trim( $_POST["locationID"] );
 
-    $result = $conn->prepare($query);
-    $result->bind_param('sii', $_REQUEST['name'], $_REQUEST['locationID'],   $_REQUEST['id']);
-	$result->execute();
-	
-	include("../queryHandler/failure.php");
-
-	$data = [];
-
-	include("../queryHandler/success.php");
+		if ( !empty( $trimmedName && !empty( $trimmedID )) ) {
+            $query = "UPDATE department
+                      SET name = ?, locationID = ?
+                      WHERE id = ?";
+        
+            $result = $conn->prepare($query);
+            $result->bind_param('sii', $trimmedName, $trimmedID, $_POST["id"]);
+            $result->execute();
+            
+            include("../queryHandler/failure.php");
+        
+            $data = [];
+        
+            include("../queryHandler/success.php");
+        }
+    }
 
 ?>

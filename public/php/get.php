@@ -35,9 +35,9 @@
 	if ( isset($_REQUEST["orderdir"]) ) { $ORDER_DIRECTION = $_REQUEST["orderdir"]; }
 
 	$query = "
-		SELECT p.id, p.lastName, p.firstName, p.jobTitle, p.email, p.isAvailable, p.experience, p.expertise, p.phone, p.biography, p.avatar, 
-			   d.name as department, 
-			   l.name as location FROM personnel p 
+		SELECT p.id, p.lastName, p.firstName, p.jobTitle, p.email, p.isAvailable, p.experience, p.expertise, p.phone, p.biography, p.avatar, p.posts, p.feedback, p.attendance, p.projects, 
+			   d.id as departmentID, 
+			   l.id as locationID FROM personnel p 
 		LEFT JOIN department d ON (d.id = p.departmentID) 
 		LEFT JOIN location l ON (l.id = d.locationID)  
 	";

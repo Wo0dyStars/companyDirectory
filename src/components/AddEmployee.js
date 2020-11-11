@@ -33,6 +33,7 @@ export default class AddEmployee extends React.Component {
         this.handleNewExpertise = this.handleNewExpertise.bind(this);
         this.handleDeleteExpertise = this.handleDeleteExpertise.bind(this);
         this.addExpertise = this.addExpertise.bind(this);
+        this.hideMessage = this.hideMessage.bind(this);
     }
 
     componentDidMount() {
@@ -107,6 +108,10 @@ export default class AddEmployee extends React.Component {
             .catch((error) => this.setState({ error: "Something went wrong. Please try again!", errorTitle: "Join unsuccessful", isLoaded: true, errorLoading: error }));
     }
 
+    hideMessage = () => {
+        this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
     componentDidUpdate() {
         if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
         if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
@@ -125,6 +130,7 @@ export default class AddEmployee extends React.Component {
                     <div className="message--title">{ successTitle }</div>
                     <div className="message--message">{ success }</div>
                 </div>
+                <div className="message--hide message--hide__success" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -137,6 +143,7 @@ export default class AddEmployee extends React.Component {
                     <div className="message--title">{ errorTitle }</div>
                     <div className="message--message">{ error }</div>
                 </div>
+                <div className="message--hide message--hide__error" onClick={this.hideMessage}>X</div>
             </div>)
         }
 

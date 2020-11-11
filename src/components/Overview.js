@@ -2,7 +2,7 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { goToTop } from 'react-scrollable-anchor';
-import Swipeable from "./Swipeable";
+import Swiping from "./Swiping";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 export default class Overview extends React.Component {
@@ -31,6 +31,7 @@ export default class Overview extends React.Component {
         this.onOpenProfile = this.onOpenProfile.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.clearSearching = this.clearSearching.bind(this);
+        this.hideMessage = this.hideMessage.bind(this);
     }
 
     componentDidMount() {
@@ -148,6 +149,10 @@ export default class Overview extends React.Component {
         else return foundLocation.name;
     }
 
+    hideMessage = () => {
+        this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
     componentDidUpdate() {
         if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
         if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
@@ -182,6 +187,7 @@ export default class Overview extends React.Component {
                     <div className="message--title">{ successTitle }</div>
                     <div className="message--message">{ success }</div>
                 </div>
+                <div className="message--hide message--hide__success" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -194,6 +200,7 @@ export default class Overview extends React.Component {
                     <div className="message--title">{ errorTitle }</div>
                     <div className="message--message">{ error }</div>
                 </div>
+                <div className="message--hide message--hide__error" onClick={this.hideMessage}>X</div>
             </div>)
         }
        
@@ -289,7 +296,7 @@ export default class Overview extends React.Component {
                                 <div className="employee-table__groupLetter">{ group }</div>
                                 <div>
                                     { employeesGroup.employees.map((employee) => (
-                                        <Swipeable key={employee.id} name={employee.id} onClick={this.onOpenProfile} onDelete={this.onDelete} className="employee-table__employee">
+                                        <Swiping key={employee.id} name={employee.id} onClick={this.onOpenProfile} onDelete={this.onDelete} className="employee-table__employee">
                                             <div className="employee-table__employee--avatar">
                                                 <img src={employee.avatar} alt={`${employee.firstName} ${employee.lastName}`} title={`${employee.firstName} ${employee.lastName}`} />
                                             </div>
@@ -322,7 +329,7 @@ export default class Overview extends React.Component {
                                                     <span>Out</span>
                                                 </div>
                                             ) }
-                                        </Swipeable>
+                                        </Swiping>
                                     )) }
                                 </div>
                             </div>

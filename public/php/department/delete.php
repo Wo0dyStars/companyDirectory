@@ -8,9 +8,11 @@
 	
 	include("../queryHandler/unconnected.php");	
 
-	$query = 'DELETE FROM `department` WHERE id = ' . $_REQUEST['id'];
+	$_POST = json_decode(file_get_contents("php://input"), true);
+	
+	$deleteDepartment = 'DELETE FROM `department` WHERE id = ' . $_POST['id']. ";";
 
-	$result = $conn->query($query);
+	$result = $conn->query($deleteDepartment);
 	
 	include("../queryHandler/failure.php");
 

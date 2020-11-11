@@ -99,6 +99,7 @@
 	@include respond(phone) {
 		margin: 0 auto;
 		margin-top: 4.5rem;
+		margin-bottom: 1.5rem;
 		justify-content: center;
 		width: 100%;
 	}
@@ -190,8 +191,8 @@
 	}
 
 	&__groupLetter {
-		background-color: rgba(255, 242, 240, 0.7);
-		color: rgba(44, 5, 77, 0.8);
+		background-color: rgba(24, 40, 72, .7);
+		color: white;
 		font-weight: 700;
 		padding: .3rem;
 	}
@@ -228,7 +229,6 @@
 		font-size: 1.1rem;
 		font-weight: 700;
 		color: rgba(0, 0, 0, .2);
-		border-bottom: 5px solid rgba(0, 0, 0, .03);
 
 		width: 100%;
 		padding: 1rem 0;
@@ -242,8 +242,17 @@
 		}
 	}
 
-	.Wrapper .Item,
-	.Wrapper .BouncingListItem {
+	.Swipe__wrapper {
+		div {
+			border: none !important;
+		}
+
+		.Swipe__item {
+			border-bottom: 1px solid rgba(0, 0, 0, .1) !important;
+		}
+	}
+
+	.Swipe__wrapper div:nth-child(2) {
 		display: grid;
 		grid-template-columns: .4fr 1fr 1fr .5fr;
 		background-color: white;
@@ -261,23 +270,11 @@
 
 		@include respond(phone) {
 			grid-template-columns: .2fr 1fr;
-			padding: 1rem 0;
-		}
-
-		&:not(:last-child) {
-			border-bottom: 1px solid rgba(0, 0, 0, .07);
+			padding: .2rem 0;
 		}
 
 		& > * {
 			@include flexCenter;
-		}
-
-		&:hover {
-			background-color: rgba(255, 242, 240, 1);
-
-			@include respond(phone) {
-				background-color: white;
-			}
 		}
 
 		.employee-table__employee {
@@ -315,7 +312,7 @@
 			}
 
 			&--name {
-				font-size: 1.4rem;
+				font-size: 1.2rem;
 				color: $color-pink;
 				text-align: center;
 				text-transform: capitalize;
@@ -332,7 +329,7 @@
 			&--department {
 				color: rgba(24, 40, 72, .6);
 				text-transform: uppercase;
-				font-size: 1.2rem;
+				font-size: 1rem;
 				display: flex;
 				flex-direction: column;
 				text-align: center;

@@ -13,7 +13,9 @@
 	animation: fadeIn 2s ease;
 
 	@include respond(phone) {
-		width: 95%;
+		width: 100%;
+		bottom: 0;
+		margin: 0;
 		font-size: .7rem;
 	}
 
@@ -40,6 +42,34 @@
 
 		@include respond(phone) {
 			font-size: .9rem;
+		}
+	}
+
+	&--hide {
+		position: absolute;
+		top: -.3rem;
+		right: 2rem;
+		width: 1.3rem;
+		height: 1.3rem;
+		@include flexCenter;
+		border-radius: 50%;
+		cursor: pointer;
+		font-weight: 700;
+
+		&__error {
+			background-color: $color-error;
+
+			&:hover {
+				background-color: $color-success;
+			}
+		}
+
+		&__success {
+			background-color: $color-success;
+
+			&:hover {
+				background-color: $color-error;
+			}
 		}
 	}
 }

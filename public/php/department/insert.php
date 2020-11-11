@@ -8,15 +8,24 @@
 	
 	include("../queryHandler/unconnected.php");
 
-	$query = 'INSERT INTO `department` (`name`, `locationID`) 
-              VALUES("' . $_REQUEST['name'] . '", "' . $_REQUEST['locationID'] . '")';
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		$_POST = json_decode(file_get_contents("php://input"), true);
+		$trimmedName = trim( $_POST["name"] );
+		$trimmedID = trim( $_POST["locationID"] );
 
-	$result = $conn->query($query);
-	
-	include("../queryHandler/failure.php");
-   
-   	$data = [];
+		if ( !empty( $trimmedName ) && !empty( $trimmedID ) ) {
+			$query = 'INSERT INTO `department` (`name`, `locationID`) 
+				VALUES("' .$trimmedName. '", "' .$trimmedID. '")';
 
-	include("../queryHandler/success.php");
+			$result = $conn->query($query);
+			
+			include("../queryHandler/failure.php");
+		
+			$data = [];
+			$data["index"] = $conn->insert_id;
+
+			include("../queryHandler/success.php");
+		}
+	}
 
 ?>

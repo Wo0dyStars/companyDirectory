@@ -8,7 +8,7 @@
 	
 	include("queryHandler/unconnected.php");	
 
-    $_POST = json_decode(file_get_contents("php://input"), true);
+	$_POST = json_decode(file_get_contents("php://input"), true);
 	$query = 'DELETE FROM personnel WHERE id = ' . $_POST['id'];
 
 	$result = $conn->query($query);

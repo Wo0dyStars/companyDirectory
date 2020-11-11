@@ -2,6 +2,7 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Line, Bar } from 'react-chartjs-2';
 
 class Employee extends React.Component {
     constructor(props) {
@@ -31,6 +32,7 @@ class Employee extends React.Component {
         this.handleChangeDepartment = this.handleChangeDepartment.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.emptyTyping = this.emptyTyping.bind(this);
+        this.hideMessage = this.hideMessage.bind(this);
     }
 
     componentDidMount() {
@@ -122,6 +124,10 @@ class Employee extends React.Component {
         return this.state.Locations.filter(location => location.id === locationID)[0].name;
     }
 
+    hideMessage = () => {
+        this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
     componentDidUpdate() {
         if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
         if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
@@ -129,7 +135,7 @@ class Employee extends React.Component {
 
     render() {
         const { error, errorTitle, success, successTitle, isLoaded, employee, editEmployee, isEditing, isComponentLoaded, typingEmployee, Departments, currentDepartment, currentLocation } = this.state;
-
+        
         let successMessage = <div></div>;
         if ( success ) { 
             successMessage = (
@@ -139,6 +145,7 @@ class Employee extends React.Component {
                     <div className="message--title">{ successTitle }</div>
                     <div className="message--message">{ success }</div>
                 </div>
+                <div className="message--hide message--hide__success" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -151,6 +158,7 @@ class Employee extends React.Component {
                     <div className="message--title">{ errorTitle }</div>
                     <div className="message--message">{ error }</div>
                 </div>
+                <div className="message--hide message--hide__error" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -195,6 +203,35 @@ class Employee extends React.Component {
                 fields.department = <select name="department" defaultValue={ currentDepartment.id } onChange={this.handleChangeDepartment}>{ departments }</select>;
                 fields.location = <div className="input--static">{ currentLocation.name }</div>;
             }
+
+            // Data for chart.js
+            const { posts, feedback, attendance, projects } = employee;
+            const data = {
+                labels: ["Posts", "Feedback", "Attendance", "Projects"],
+                datasets: [
+                  {
+                    label: "Productivity",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'rgba(24, 40, 72, .8)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'rgba(75,192,192,1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                    pointHoverBorderColor: 'rgba(220,220,220,1)',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: [posts, feedback, attendance, projects]
+                  }
+                ]
+              };
 
             return (
                 <div className={isComponentLoaded ? "employee_container" : "employee_container entranceEmployee"}>
@@ -395,6 +432,11 @@ class Employee extends React.Component {
                             </header>
                         </section>
                     </article>
+
+                    <aside>
+                        <Bar ref="chart" data={data}   />
+                    </aside>
+                    
                     
                 </div>
             )

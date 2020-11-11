@@ -8,18 +8,25 @@
 	
 	include("../queryHandler/unconnected.php");
 
-	$query = "UPDATE `location` 
-              SET `name` = ?
-              WHERE id = ?";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $_POST = json_decode(file_get_contents("php://input"), true);
+        $trimmedName = trim( $_POST["name"] );
 
-    $result = $conn->prepare($query);
-    $result->bind_param('si', $_REQUEST['name'], $_REQUEST['id']);
-	$result->execute();
-	
-	include("../queryHandler/failure.php");
-
-	$data = [];
-
-	include("../queryHandler/success.php");
+		if ( !empty( $trimmedName ) ) {
+            $query = "UPDATE location
+                      SET name = ?
+                      WHERE id = ?";
+        
+            $result = $conn->prepare($query);
+            $result->bind_param('si', $trimmedName, $_POST['id']);
+            $result->execute();
+            
+            include("../queryHandler/failure.php");
+        
+            $data = [];
+        
+            include("../queryHandler/success.php");
+        }
+    }
 
 ?>

@@ -2,6 +2,7 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "./LoadingSpinner";
+import Swiping from "./Swiping";
 
 export default class Locations extends React.Component {
 
@@ -28,6 +29,7 @@ export default class Locations extends React.Component {
         this.handleDelete = this.handleDelete.bind(this);
         this.handleCurrentLocation = this.handleCurrentLocation.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.hideMessage = this.hideMessage.bind(this);
     }
 
 
@@ -79,8 +81,8 @@ export default class Locations extends React.Component {
         this.setState({ currentValues });
     }
 
-    handleEdit = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleEdit = (id) => {
+        const index = Number(id);
         const editingMode = this.state.isEditing.map(location => {
             if ( Number(location.id) === index ) {
                 return {
@@ -106,8 +108,8 @@ export default class Locations extends React.Component {
         this.setState({ isEditing: editingMode, currentValues });
     }
 
-    handleUpdate = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleUpdate = (id) => {
+        const index = Number(id);
         this.setState({ isLoaded: false });
 
         const currentValue = this.state.currentValues.filter(value => Number(value.id) === index)[0].value;
@@ -154,8 +156,8 @@ export default class Locations extends React.Component {
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while updating location", errorTitle: "Update unsuccessful" }))
     }
 
-    handleDelete = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleDelete = (name) => {
+        const index = Number(name.split("-")[1]);
         this.setState({ isLoaded: false });
 
         const currentLocation = this.state.departments.filter(department => Number(department.id) === index)[0];
@@ -201,6 +203,10 @@ export default class Locations extends React.Component {
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while adding location", errorTitle: "Insert unsuccessful" }))
     }
 
+    hideMessage = () => {
+        this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
     componentDidUpdate() {
         if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
         if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
@@ -219,6 +225,7 @@ export default class Locations extends React.Component {
                     <div className="message--title">{ successTitle }</div>
                     <div className="message--message">{ success }</div>
                 </div>
+                <div className="message--hide message--hide__success" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -231,6 +238,7 @@ export default class Locations extends React.Component {
                     <div className="message--title">{ errorTitle }</div>
                     <div className="message--message">{ error }</div>
                 </div>
+                <div className="message--hide message--hide__error" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -259,64 +267,59 @@ export default class Locations extends React.Component {
                     <div className="locations">
 
                         { locations.map((location, index) => (
-                            <div key={`location-${index}`} className="locations__location">
-                                { !isEditing.filter(x => x.id === location.id)[0].edit ?
-                                (
-                                    <div key={`location_-${index}`}>
-                                        <div className="locations__location--name">
-                                            <div className="locations__location--name__name">{ location.name }</div>
-                                        </div>
-                                        <div>
-                                            { departments.map((department, index) => {
-                                                if ( department.id === location.id ) {
-                                                    return (
-                                                        <div key={`departments-${index}`} className="locations__location--departments">
-                                                            { !department.departments.length ? (
-                                                                <div className="locations__location--departments__title">Currently has no departments</div>
-                                                            ) : (
-                                                                <div className="locations__location--departments__title">Currently has the following departments</div>
-                                                            ) }
-                                                            { department.departments.map((d, index) => ( <div className="locations__location--departments__department" key={`d-${index}`}>{d}</div> )) }
-                                                        </div>
-                                                    )
-                                                }
+                            <Swiping key={`location-${index}`} name={`location-${location.id}`} onDelete={this.handleDelete}>
+                                <div className="locations__location">
+                                    { !isEditing.filter(x => x.id === location.id)[0].edit ?
+                                    (
+                                        <div key={`location_-${index}`} className="normal">
+                                            <div className="locations__location--name">
+                                                <div className="locations__location--name__name">{ location.name }</div>
+                                            </div>
+                                            <div>
+                                                { departments.map((department, index) => {
+                                                    if ( department.id === location.id ) {
+                                                        return (
+                                                            <div key={`departments-${index}`} className="locations__location--departments">
+                                                                { !department.departments.length ? (
+                                                                    <div className="locations__location--departments__title">Currently has no departments</div>
+                                                                ) : (
+                                                                    <div className="locations__location--departments__title">Currently has the following departments</div>
+                                                                ) }
+                                                                { department.departments.map((d, index) => ( <div className="locations__location--departments__department" key={`d-${index}`}>{d}</div> )) }
+                                                            </div>
+                                                        )
+                                                    }
 
-                                                return <div></div>;
-                                            }) }
-                                            
-                                        </div>
-                                        <div className="locations__location--controls">
-                                            <div>
-                                                <button className="delete" type="button" name={`location-${location.id}`} onClick={this.handleDelete}>Remove</button>
-                                                <i className="fas fa-trash-alt"></i>
+                                                    return <div></div>;
+                                                }) }
+                                                
                                             </div>
-                                            <div>
-                                                <button className="edit" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Edit</button>
-                                                <i className="fas fa-edit"></i>
+                                            <div className="locations__location--controls">
+                                                <div className="edit-container" onClick={this.handleEdit.bind(this, location.id)}>
+                                                    <i className="fas fa-edit"></i>
+                                                </div>
+                                                
                                             </div>
                                             
                                         </div>
-                                        
-                                    </div>
-                                ) :
-                                (   
-                                    <div key={`location__-${index}`}>
-                                        <div className="locations__location--name">
-                                            <input type="text" name={`location-${location.id}`} placeholder={location.name} value={currentValues.filter(x => x.id === location.id)[0].value} onChange={this.handleChange} />
-                                        </div>
-                                        <div className="locations__location--controls">
-                                            <div>
-                                                <button className="cancel" type="button" name={`location-${location.id}`} onClick={this.handleEdit}>Cancel</button>
-                                                <i className="fas fa-window-close"></i>
+                                    ) :
+                                    (   
+                                        <div key={`location__-${index}`} className="editing">
+                                            <div className="locations__location--name">
+                                                <input type="text" name={`location-${location.id}`} placeholder={location.name} value={currentValues.filter(x => x.id === location.id)[0].value} onChange={this.handleChange} />
                                             </div>
-                                            <div>
-                                                <button className="update" type="button" name={`location-${location.id}`} onClick={this.handleUpdate}>Update</button>
-                                                <i className="fas fa-archive"></i>
+                                            <div className="locations__location--controls">
+                                                <div className="cancel-container" onClick={this.handleEdit.bind(this, location.id)}>
+                                                    <i className="fas fa-window-close"></i>
+                                                </div>
+                                                <div className="update-container" onClick={this.handleUpdate.bind(this, location.id)}>
+                                                    <i className="fas fa-archive"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ) }
-                            </div>
+                                    ) }
+                                </div>
+                            </Swiping>
                         )) }
                     </div>
                 </div>

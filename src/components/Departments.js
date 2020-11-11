@@ -2,6 +2,7 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "./LoadingSpinner";
+import Swiping from "./Swiping";
 
 export default class Departments extends React.Component {
     constructor(props) {
@@ -31,6 +32,7 @@ export default class Departments extends React.Component {
         this.handleChangeLocation = this.handleChangeLocation.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChangeLocationID = this.handleChangeLocationID.bind(this);
+        this.hideMessage = this.hideMessage.bind(this);
     }
 
     componentDidMount() {
@@ -98,8 +100,8 @@ export default class Departments extends React.Component {
         this.setState({ currentValues });
     }
 
-    handleEdit = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleEdit = (id) => {
+        const index = Number(id);
         const editingMode = this.state.isEditing.map(department => {
             if ( Number(department.id) === index ) {
                 return {
@@ -126,8 +128,8 @@ export default class Departments extends React.Component {
         this.setState({ isEditing: editingMode, currentValues });
     }
 
-    handleUpdate = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleUpdate = (id) => {
+        const index = Number(id);
         this.setState({ isLoaded: false });
 
         const currentValue = this.state.currentValues.filter(value => Number(value.id) === index)[0];
@@ -139,7 +141,7 @@ export default class Departments extends React.Component {
             currentLocationID = currentValue.locationID;
         }
 
-        let currentLocationName = this.state.departmentsFinal.filter(d => d.location.id === currentLocationID)[0].location.name;
+        let currentLocationName = this.state.locations.filter(l => l.id === currentLocationID)[0].name;
 
         if ( currentValue.value === "" ) {
             this.setState({ isLoaded: true, error: "Please fill up the fields properly!", errorTitle: "Missing fields" });
@@ -164,8 +166,7 @@ export default class Departments extends React.Component {
                                 ...department,
                                 name: currentValue.value,
                                 location: {
-                                    ...department.location,
-                                    locationID: currentLocationID,
+                                    id: currentLocationID,
                                     name: currentLocationName
                                 }
                             }
@@ -193,19 +194,21 @@ export default class Departments extends React.Component {
         }
     }
 
-    handleDelete = (event) => {
-        const index = Number(event.target.name.split("-")[1]);
+    handleDelete = (eventName) => {
+        const index = Number(eventName.split("-")[1]);
         this.setState({ isLoaded: false });
        
         const currentDepartment = this.state.departmentsFinal.filter(department => Number(department.id) === index)[0];
         if ( currentDepartment.employees > 0 ) {
             this.setState({ isLoaded: true, error: "This department has employees. Please transfer them first in order to delete.", errorTitle: "Deletion rejected" });
+            return false;
         } else {
             serverAPI("POST", "/department/delete.php", {id: index})
             .then((deleted) => {
                 if ( deleted.status.code === "200" ) {
                     const deletedDepartment = this.state.departmentsFinal.filter(department => Number(department.id) !== index);
                     this.setState({ isLoaded: true, departmentsFinal: deletedDepartment, success: "You have deleted this department successfully!", successTitle: "Deletion successful" });
+                    return true;
                 } else {
                     this.setState({ isLoaded: true, error: "An error occurred while deleting department", errorTitle: "Deletion unsuccessful" });
                 }
@@ -255,6 +258,10 @@ export default class Departments extends React.Component {
         
     }
 
+    hideMessage = () => {
+        this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
     componentDidUpdate() {
         if ( this.state.success ) { setTimeout(() => this.setState({ success: "", successTitle: "" }), 8000); }
         if ( this.state.error ) { setTimeout(() => this.setState({ error: "", errorTitle: "" }), 8000); }
@@ -277,6 +284,7 @@ export default class Departments extends React.Component {
                     <div className="message--title">{ successTitle }</div>
                     <div className="message--message">{ success }</div>
                 </div>
+                <div className="message--hide message--hide__success" onClick={this.hideMessage}>X</div>
             </div>)
         }
 
@@ -289,8 +297,16 @@ export default class Departments extends React.Component {
                     <div className="message--title">{ errorTitle }</div>
                     <div className="message--message">{ error }</div>
                 </div>
+                <div className="message--hide message--hide__error" onClick={this.hideMessage}>X</div>
             </div>)
         }
+
+        const departmentsGrouped = departmentsFinal.reduce((departments, current) => {
+            if ( departments[current.location.id] ) departments[current.location.id] = [...departments[current.location.id], current];
+            else departments[current.location.id] = [current];
+
+            return departments;
+        }, []);
 
         if (!isLoaded) {
             return <LoadingSpinner />
@@ -322,48 +338,46 @@ export default class Departments extends React.Component {
                     {errorMessage}
 
                     <div className="departments">
-                        { departmentsFinal.map((department, index) => (
-                            
-                            <div key={`department-${index}`} className="departments__department"> 
-                                { !isEditing.filter(x => x.id === department.id)[0].edit ? (
-                                    <div>
-                                        <div className="departments__department--name departments__department--name__name">{ department.name }</div>
-                                        <div className="departments__department--location">{ department.location.name }</div>
-                                        <div className="departments__department--employees">Currently has { department.employees } employees</div>
-
-                                        <div className="departments__department--controls">
-                                        <div>
-                                                <button className="delete" type="button" name={`department-${department.id}`} onClick={this.handleDelete}>Remove</button>
-                                                <i className="fas fa-trash-alt"></i>
-                                            </div>
-                                            <div>
-                                                <button className="edit" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Edit</button>
-                                                <i className="fas fa-edit"></i>
-                                            </div>
+                        { departmentsGrouped.map((departments, index) => (
+                            <div key={`departments-${index}`}>
+                                <div className="departments--location">{ departments[0].location.name }</div>
+                                { departments.map((department, index) => (
+                                    <Swiping key={`department-${index}`} name={`department-${department.id}`} onDelete={this.handleDelete}>
+                                        <div className="departments__department"> 
+                                            { !isEditing.filter(x => x.id === department.id)[0].edit ? (
+                                                <div>
+                                                    <div className="departments__department--name departments__department--name__name">{ department.name }</div>
+                                                    <div className="departments__department--employees">{ department.employees } employees</div>
+            
+                                                    <div className="departments__department--controls">
+                                                        <div className="edit-container" onClick={this.handleEdit.bind(this,department.id)}>
+                                                            <i className="fas fa-edit"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <div className="departments__department--name">
+                                                        <input type="text" name={`department-${department.id}`} placeholder={department.name} value={currentValues.filter(x => x.id === department.id)[0].value} onChange={this.handleChange} />
+                                                        <select name={`department-${department.id}`} defaultValue={currentValues.filter(x => x.id === department.id)[0].locationID} autoComplete="off" onChange={this.handleChangeLocationID}>
+                                                            <option value="select">Location</option>
+                                                            { Locations }
+                                                        </select>
+                                                    </div>
+            
+                                                    <div className="departments__department--controls">
+                                                        <div className="cancel-container" onClick={this.handleEdit.bind(this,department.id)}>
+                                                            <i className="fas fa-window-close"></i>
+                                                        </div>
+                                                        <div className="update-container" onClick={this.handleUpdate.bind(this, department.id)}>
+                                                            <i className="fas fa-archive"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) }
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <div className="departments__department--name">
-                                            <input type="text" name={`department-${department.id}`} placeholder={department.name} value={currentValues.filter(x => x.id === department.id)[0].value} onChange={this.handleChange} />
-                                            <select name={`department-${department.id}`} defaultValue={currentValues.filter(x => x.id === department.id)[0].locationID} autoComplete="off" onChange={this.handleChangeLocationID}>
-                                                <option value="select">Location</option>
-                                                { Locations }
-                                            </select>
-                                        </div>
-
-                                        <div className="departments__department--controls">
-                                            <div>
-                                                <button className="cancel" type="button" name={`department-${department.id}`} onClick={this.handleEdit}>Cancel</button>
-                                                <i className="fas fa-window-close"></i>
-                                            </div>
-                                            <div>
-                                                <button className="update" type="button" name={`department-${department.id}`} onClick={this.handleUpdate}>Update</button>
-                                                <i className="fas fa-archive"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) }
+                                    </Swiping>
+                                )) }
                             </div>
                         )) }
                     </div>
