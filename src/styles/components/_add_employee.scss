@@ -90,6 +90,7 @@
 			&--add {
 				background-color: green;
 				font-weight: 900;
+				@include flexCenter;
 			}
 
 			&--delete {
@@ -115,6 +116,22 @@
 	&-form {
 		@include flexCenter;
 		flex-direction: column;
+
+		.input-group {
+			width: 100%;
+			@include flexCenter;
+			position: relative;
+
+			.warning {
+				position: absolute;
+				top: 48%;
+				transform: translateY(-50%);
+				right: 1rem;
+				color: $color-pink;
+				font-size: .8rem;
+				transition: all .4s ease;
+			}
+		}
 
 		input {
 			color: rgba(0, 0, 0, .6);

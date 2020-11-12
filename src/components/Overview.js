@@ -126,8 +126,10 @@ export default class Overview extends React.Component {
         }
 
         let filteredEmployees = this.state.employees.filter(employee => {
-            const { firstName, lastName, jobTitle, department, email, location, expertise } = employee;
-            const searchedKeys = [ firstName, lastName, jobTitle, department, email, location, expertise ];
+            const { firstName, lastName, jobTitle, departmentID, email, locationID, expertise } = employee;
+            const departmentName = this.getDepartment(departmentID);
+            const locationName = this.getLocation(locationID);
+            const searchedKeys = [ firstName, lastName, jobTitle, departmentName, email, locationName, expertise ];
             
             return searchedKeys.join(" ").toLowerCase().indexOf(event.target.value) !== -1;
         });

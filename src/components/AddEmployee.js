@@ -24,8 +24,9 @@ export default class AddEmployee extends React.Component {
             successTitle: "",
             isComponentLoaded: false,
             Departments: [],
-            expertiseList: [],
-            isAvatarURL: false
+            expertiseList: [""],
+            isAvatarURL: false,
+            warnings: { firstName: "", lastName: "", email: "" }
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -34,6 +35,7 @@ export default class AddEmployee extends React.Component {
         this.handleDeleteExpertise = this.handleDeleteExpertise.bind(this);
         this.addExpertise = this.addExpertise.bind(this);
         this.hideMessage = this.hideMessage.bind(this);
+        this.checkMandatoryFields = this.checkMandatoryFields.bind(this);
     }
 
     componentDidMount() {
@@ -84,7 +86,7 @@ export default class AddEmployee extends React.Component {
 
     handleChange = (event) => {
         if ( event.target.name === "departmentID" ) { this.setState({ departmentID: Number(event.target.value ) }) }
-        else { this.setState({ [event.target.name]: event.target.value }); }
+        else { this.setState({ [event.target.name]: event.target.value, warnings: { firstName: "", lastName: "", email: "" } }); }
     }
 
     handleSubmit = (event) => {
@@ -95,21 +97,41 @@ export default class AddEmployee extends React.Component {
         newState.expertise = newState.expertiseList.join(",");
 
         this.setState({ isLoaded: false });
-        serverAPI("POST", "insert.php", JSON.stringify(newState))
-            .then((res) => {
+
+        if ( this.checkMandatoryFields() ) {
+            serverAPI("POST", "insert.php", JSON.stringify(newState))
+            .then(() => {
 
                 this.setState(
                 { 
-                    firstName: "", lastName: "", email: "", jobTitle: "", departmentID: this.state.Departments[0].id, expertise: "", expertiseList: [], phone: "", biography: "", avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg",
+                    firstName: "", lastName: "", email: "", jobTitle: "", departmentID: this.state.Departments[0].id, expertise: "", expertiseList: [""], phone: "", biography: "", avatar: "https://directory-avatars.s3-eu-west-1.amazonaws.com/noavatar.jpg",
                     success: "You have just added a new employee. Well done!",
                     successTitle: "Join successful",
                     isLoaded: true
                 })})
             .catch((error) => this.setState({ error: "Something went wrong. Please try again!", errorTitle: "Join unsuccessful", isLoaded: true, errorLoading: error }));
+        }
     }
 
     hideMessage = () => {
         this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
+    checkMandatoryFields = () => {
+        const { firstName, lastName, email, warnings } = this.state;
+
+        let message = "Please fill up the following fields: ";
+        let foundError = false;
+        if ( firstName.length < 3 ) { message += "'First Name' ";  warnings.firstName = "Minimum length is 3"; foundError = true; }
+        if ( lastName.length < 3 ) { message += "'Last Name' ";  warnings.lastName = "Minimum length is 3"; foundError = true; }
+        if ( !email.includes("@") ) { message += "'Email' ";  warnings.email = "Must include '@'"; foundError = true; }
+
+        if ( foundError ) {
+            this.setState({ error: message, errorTitle: "Join unsuccessful", isLoaded: true });
+            return false;
+        }
+
+        return true;
     }
 
     componentDidUpdate() {
@@ -118,7 +140,7 @@ export default class AddEmployee extends React.Component {
     }
 
     render() {
-        const { error, errorTitle, success, successTitle } = this.state;
+        const { error, errorTitle, success, successTitle, warnings } = this.state;
         const { firstName, lastName, email, jobTitle, expertiseList, departmentID, avatar, isAvatarURL, phone, biography, Departments, isLoaded, isComponentLoaded } = this.state;
 
         let successMessage = <div></div>;
@@ -175,9 +197,18 @@ export default class AddEmployee extends React.Component {
                         {isAvatarURL && <input type="text" name="avatar" value={avatar} placeholder="Your avatar URL" onChange={this.handleChange} />}
                     </div>
 
-                    <input type="text" name="firstName" value={firstName} placeholder="First name" required onChange={this.handleChange} />
-                    <input type="text" name="lastName" value={lastName} placeholder="Last name" required onChange={this.handleChange} />
-                    <input type="email" name="email" value={email} placeholder="Email address" required onChange={this.handleChange} />
+                    <div className="input-group">
+                        <input type="text" name="firstName" value={firstName} placeholder="First name" onChange={this.handleChange} />  
+                        { warnings.firstName && <span className="warning">{ warnings.firstName }</span> }
+                    </div>
+                    <div className="input-group">
+                        <input type="text" name="lastName" value={lastName} placeholder="Last name" onChange={this.handleChange} />  
+                        { warnings.lastName && <span className="warning">{ warnings.lastName }</span> }
+                    </div>
+                    <div className="input-group">
+                        <input type="email" name="email" value={email} placeholder="Email address" onChange={this.handleChange} /> 
+                        { warnings.email && <span className="warning">{ warnings.email }</span> }
+                    </div>
                     
                     <input type="text" name="jobTitle" value={jobTitle} placeholder="Job Title" onChange={this.handleChange} />
                     <select name="departmentID" value={departmentID} onChange={this.handleChange}>{ departments }</select>

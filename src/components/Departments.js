@@ -33,6 +33,7 @@ export default class Departments extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChangeLocationID = this.handleChangeLocationID.bind(this);
         this.hideMessage = this.hideMessage.bind(this);
+        this.handleInputClear = this.handleInputClear.bind(this);
     }
 
     componentDidMount() {
@@ -49,7 +50,7 @@ export default class Departments extends React.Component {
                                 const employeeList = employees.data.filter(employee => employee.departmentID === departments.data[i].id);
 
                                 isEditing.push({ id: departments.data[i].id, edit: false });
-                                currentValues.push({ id: departments.data[i].id, locationID: "select", value: "" });
+                                currentValues.push({ id: departments.data[i].id, locationID:  departments.data[i].locationID, value:  departments.data[i].name });
                                 const locationNameRaw = locations.data.filter(l => l.id === departments.data[i].locationID)[0];
                                 const locationName = locationNameRaw ? locationNameRaw.name : "";
                                 
@@ -113,17 +114,11 @@ export default class Departments extends React.Component {
             return department;
         })
 
-        const currentValues = this.state.currentValues.map(value => {
-            if ( Number(value.id) === index ) {
-                return {
-                    id: value.id,
-                    locationID: "select",
-                    value: ""
-                }
-            }
-
-            return value;
-        })
+        const currentValues = this.state.currentValues;
+        for (let i = 0; i < this.state.departmentsFinal.length; i++) {
+            currentValues[i].locationID = this.state.departmentsFinal[i].location.id;
+            currentValues[i].value = this.state.departmentsFinal[i].name;
+        }
 
         this.setState({ isEditing: editingMode, currentValues });
     }
@@ -174,20 +169,8 @@ export default class Departments extends React.Component {
     
                         return department;
                     })
-
-                    const currentValues = this.state.currentValues.map(value => {
-                        if ( Number(value.id) === index ) {
-                            return {
-                                id: value.id,
-                                value: "",
-                                locationID: "select"
-                            }
-                        }
             
-                        return value;
-                    })
-            
-                    this.setState({ isLoaded: true, isEditing: editingMode, departmentsFinal: editedDepartments, currentValues, success: "You have updated this location successfully!", successTitle: "Update successful" });
+                    this.setState({ isLoaded: true, isEditing: editingMode, departmentsFinal: editedDepartments, success: "You have updated this location successfully!", successTitle: "Update successful" });
                 }
             })
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while updating location", errorTitle: "Update unsuccessful" }))
@@ -260,6 +243,12 @@ export default class Departments extends React.Component {
 
     hideMessage = () => {
         this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
+    handleInputClear = (id) => {
+        const currentValues = this.state.currentValues.map(value => (value.id === id) ? {id: value.id, locationID: value.locationID, value: ""} : value);
+
+        this.setState({ currentValues });
     }
 
     componentDidUpdate() {
@@ -359,6 +348,7 @@ export default class Departments extends React.Component {
                                                 <div>
                                                     <div className="departments__department--name">
                                                         <input type="text" name={`department-${department.id}`} placeholder={department.name} value={currentValues.filter(x => x.id === department.id)[0].value} onChange={this.handleChange} />
+                                                        <span className="departments__department--name__x" onClick={this.handleInputClear.bind(this, department.id)}>X</span>
                                                         <select name={`department-${department.id}`} defaultValue={currentValues.filter(x => x.id === department.id)[0].locationID} autoComplete="off" onChange={this.handleChangeLocationID}>
                                                             <option value="select">Location</option>
                                                             { Locations }

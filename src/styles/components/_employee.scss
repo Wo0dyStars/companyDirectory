@@ -245,15 +245,21 @@
 		grid-template-columns: 1fr !important;
 		padding-left: .6rem !important;
 		width: 100% !important;
-		margin-left: .5rem;
+		margin-left: .3rem;
 
 		@include respond(phone) {
 			padding-left: .2rem !important;
 		}
 
 		&--bio {
+			background: linear-gradient(to right, $color-pink, #203a43, #2c5364);
+			border-radius: 1rem;
+			color: white;
+			padding: 1rem;
 			@include respond(phone) {
-				padding-left: 0rem !important;
+				padding: 1rem !important;
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
 			}
 		}
 
@@ -300,7 +306,7 @@
 		&__inputs {
 			width: 100%;
 
-			div {
+			> div {
 				display: grid;
 				grid-template-columns: 0.3fr 1fr;
 				margin-bottom: 1rem;
@@ -334,6 +340,31 @@
 				.field {
 					display: flex;
 					flex-direction: column;
+					position: relative;
+
+					&--input {
+						position: relative;
+					}
+
+					&--x {
+						position: absolute;
+						text-align: right;
+						color: rgba(0, 0, 0, .2);
+						cursor: pointer;
+
+						top: 46%;
+						transform: translateY(-50%);
+						right: 2rem;
+						z-index: 100;
+
+						@include respond(phone) {
+							right: 1.5rem;
+						}
+
+						@include respond(tab) {
+							right: 2.5rem;
+						}
+					}
 				}
 			}
 
@@ -361,6 +392,7 @@
 			textarea {
 				width: 95%;
 				padding: .5rem;
+				padding-right: 2rem;
 				border: none;
 				text-align: left;
 				font-size: 1.1rem;
@@ -368,9 +400,11 @@
 				resize: none;
 				border: 1px solid #56ab2f;
 				margin-left: 1rem;
+				position: relative;
 
 				@include respond(phone) {
 					padding: .5rem;
+					padding-right: 2rem;
 					margin-left: .2rem;
 					color: rgba(0, 0, 0, .4);
 				}
@@ -447,7 +481,7 @@
 					width: 95%;
 					min-height: 7rem;
 					padding: 0 1rem;
-					margin: 0 .8rem;
+					margin: 0 .9rem;
 					color: rgba(0, 0, 0, .7);
 					letter-spacing: .1rem;
 					border: 1px solid #56ab2f;
@@ -456,7 +490,7 @@
 					padding-left: 1rem !important;
 
 					@include respond(phone) {
-						margin: 0 .6rem;
+						margin: 0 .2rem;
 					}
 				}
 			}

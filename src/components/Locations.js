@@ -30,6 +30,7 @@ export default class Locations extends React.Component {
         this.handleCurrentLocation = this.handleCurrentLocation.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.hideMessage = this.hideMessage.bind(this);
+        this.handleInputClear = this.handleInputClear.bind(this);
     }
 
 
@@ -45,7 +46,7 @@ export default class Locations extends React.Component {
                 const currentValues = [];
                 for (let i = 0; i < locations.length; i++) {
                     isEditing.push({ id: locations[i].id, edit: false });
-                    currentValues.push({ id: locations[i].id, value: "" });
+                    currentValues.push({ id: locations[i].id, value: locations[i].name });
                 }
 
                 serverAPI("GET", "/department/get.php")
@@ -94,16 +95,10 @@ export default class Locations extends React.Component {
             return location;
         })
 
-        const currentValues = this.state.currentValues.map(value => {
-            if ( Number(value.id) === index ) {
-                return {
-                    id: value.id,
-                    value: ""
-                }
-            }
-
-            return value;
-        })
+        const currentValues = this.state.currentValues;
+        for (let i = 0; i < this.state.locations.length; i++) {
+            currentValues[i].value = this.state.locations[i].name;
+        }
 
         this.setState({ isEditing: editingMode, currentValues });
     }
@@ -138,19 +133,8 @@ export default class Locations extends React.Component {
     
                         return location;
                     })
-
-                    const currentValues = this.state.currentValues.map(value => {
-                        if ( Number(value.id) === index ) {
-                            return {
-                                id: value.id,
-                                value: ""
-                            }
-                        }
             
-                        return value;
-                    })
-            
-                    this.setState({ isLoaded: true, isEditing: editingMode, locations: editedLocations, currentValues, success: "You have updated this location successfully!", successTitle: "Update successful" });
+                    this.setState({ isLoaded: true, isEditing: editingMode, locations: editedLocations, success: "You have updated this location successfully!", successTitle: "Update successful" });
                 }
             })
             .catch(() => this.setState({ isLoaded: true, error: "An error occurred while updating location", errorTitle: "Update unsuccessful" }))
@@ -205,6 +189,12 @@ export default class Locations extends React.Component {
 
     hideMessage = () => {
         this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
+    handleInputClear = (id) => {
+        const currentValues = this.state.currentValues.map(value => (value.id === id) ? {id: value.id, value: ""} : value);
+
+        this.setState({currentValues});
     }
 
     componentDidUpdate() {
@@ -307,6 +297,7 @@ export default class Locations extends React.Component {
                                         <div key={`location__-${index}`} className="editing">
                                             <div className="locations__location--name">
                                                 <input type="text" name={`location-${location.id}`} placeholder={location.name} value={currentValues.filter(x => x.id === location.id)[0].value} onChange={this.handleChange} />
+                                                <span className="locations__location--name__x" onClick={this.handleInputClear.bind(this, location.id)}>X</span>
                                             </div>
                                             <div className="locations__location--controls">
                                                 <div className="cancel-container" onClick={this.handleEdit.bind(this, location.id)}>

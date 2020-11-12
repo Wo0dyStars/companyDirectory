@@ -94,6 +94,15 @@
 				color: rgba(0, 0, 0, .6);
 				@include flexCenter;
 
+				&__x {
+					color: rgba(0, 0, 0, .2);
+					cursor: pointer;
+					position: absolute;
+					top: 48%;
+					transform: translateY(-50%);
+					left: .2rem;
+				}
+
 				&__name {
 					font-size: 1rem;
 					text-align: center;

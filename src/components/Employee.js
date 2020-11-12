@@ -2,7 +2,7 @@ import React from "react";
 import { serverAPI } from "../services/serverAPI";
 import { Link } from "react-router-dom";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { Line, Bar } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 class Employee extends React.Component {
     constructor(props) {
@@ -28,11 +28,12 @@ class Employee extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
-        this.handleChangeName = this.handleChangeName.bind(this);
         this.handleChangeDepartment = this.handleChangeDepartment.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.emptyTyping = this.emptyTyping.bind(this);
         this.hideMessage = this.hideMessage.bind(this);
+        this.handleInputClear = this.handleInputClear.bind(this);
+        this.checkMandatoryFields = this.checkMandatoryFields.bind(this);
     }
 
     componentDidMount() {
@@ -53,7 +54,7 @@ class Employee extends React.Component {
 
         this.setState({
             employee, 
-            editEmployee: employee,
+            editEmployee: { ...employee, name: employee.firstName + " " + employee.lastName },
             Departments,
             Locations,
             currentDepartment,
@@ -67,17 +68,6 @@ class Employee extends React.Component {
         this.setState((prevState) => ({
             typingEmployee: { ...prevState.typingEmployee, [event.target.name]: event.target.value },
             editEmployee: { ...prevState.editEmployee, [event.target.name]: event.target.value }
-        }))
-    }
-
-    handleChangeName = (event) => {
-        const splitName = event.target.value.split(' ');
-        const firstName = splitName[0];
-        const lastName = splitName[1] ? splitName[1] : "";
-
-        this.setState((prevState) => ({
-            typingEmployee: { ...prevState.typingEmployee, firstName, lastName},
-            editEmployee: { ...prevState.editEmployee, firstName, lastName}
         }))
     }
 
@@ -98,7 +88,15 @@ class Employee extends React.Component {
 
     handleSave = (event) => {
         this.setState({ isLoaded: false });
-        serverAPI("POST", "update.php", JSON.stringify(this.state.editEmployee))
+
+        const splitName = this.state.editEmployee.name.split(" ");
+        const employee = this.state.editEmployee;
+
+        employee.firstName = splitName[0];
+        employee.lastName = splitName[1] ? splitName[1] : "";
+
+        if ( this.checkMandatoryFields() ) {
+            serverAPI("POST", "update.php", JSON.stringify(employee))
             .then(() => {
                 this.emptyTyping();
                 this.setState({ success: "You have just saved your updated values.", successTitle: "Save successful", isLoaded: true, employee: this.state.editEmployee })
@@ -108,7 +106,8 @@ class Employee extends React.Component {
             })
             .catch(() => this.setState({ isLoaded: true, errorTitle: "Save unsuccessful", error: "An error occurred while saving your values" }));
 
-        this.toggleEdit();
+            this.toggleEdit();
+        } 
     }
 
     toggleEdit = (event) => {
@@ -116,7 +115,7 @@ class Employee extends React.Component {
     }
 
     emptyTyping = (event) => {
-        const typingEmployee = { firstName: "", lastName: "", biography: "", jobTitle: "", experience: "", expertise: "", phone: "", email: "", avatar: "" };
+        const typingEmployee = { name: "", biography: "", jobTitle: "", experience: "", expertise: "", phone: "", email: "", avatar: "" };
         this.setState({ typingEmployee });
     }
 
@@ -126,6 +125,33 @@ class Employee extends React.Component {
 
     hideMessage = () => {
         this.setState({ success: "", successTitle: "", error: "", errorTitle: "" });
+    }
+
+    handleInputClear = (...values) => {
+        this.setState({editEmployee: {...this.state.editEmployee, [values[0]]: ""}});
+    }
+
+    checkMandatoryFields = () => {
+        const { editEmployee, typingEmployee, employee } = this.state;
+
+        let message = "Please provide values to the following fields: ";
+        let foundError = false;
+        if ( editEmployee.name === "" ) { message += "'Full Name '"; foundError = true; }
+        if ( editEmployee.email === "" ) { message += "'Email '"; foundError = true; }
+
+        if ( foundError ) {
+            this.setState({ error: message, errorTitle: "Save unsuccessful", isLoaded: true });
+            return false;
+        } 
+
+        for (let value in typingEmployee) {
+            if ( employee[value] !== editEmployee[value] ) {
+                return true;
+            }
+        }
+
+        this.setState({ error: "You have not changed anything.", errorTitle: "Save unsuccessful", isLoaded: true });
+        return false;
     }
 
     componentDidUpdate() {
@@ -192,13 +218,13 @@ class Employee extends React.Component {
             }
 
             if (isEditing) {
-                fields.email = <input type="text" name="email" defaultValue={ typingEmployee.email } placeholder="Type your email" onChange={this.handleChange} />;
-                fields.phone = <input type="text" name="phone" defaultValue={ typingEmployee.phone } placeholder="Type your phone number" onChange={this.handleChange} />;
-                fields.name = <input type="text" name="name" defaultValue={ typingEmployee.firstName + "" + typingEmployee.lastName } placeholder="Type full name" onChange={this.handleChangeName} />;
-                fields.biography = <textarea name="biography" defaultValue={ typingEmployee.biography } placeholder="Type your biography" onChange={this.handleChange}></textarea>;
-                fields.jobTitle = <input type="text" name="jobTitle" defaultValue={ typingEmployee.jobTitle } placeholder="Type your job title" onChange={this.handleChange} />;
-                fields.experience = <input type="text" name="experience" defaultValue={ typingEmployee.experience } placeholder="Type your experience" onChange={this.handleChange} />;
-                fields.expertise = <input type="text" maxLength="50" name="expertise" defaultValue={ typingEmployee.expertise } placeholder="Type your expertise (use ',' for more)" onChange={this.handleChange} />;
+                fields.email = <input type="text" name="email" value={ editEmployee.email } placeholder="Type your email" onChange={this.handleChange} />;
+                fields.phone = <input type="text" name="phone" value={ editEmployee.phone } placeholder="Type your phone number" onChange={this.handleChange} />;
+                fields.name = <input type="text" name="name" value={ editEmployee.name } placeholder="Type full name" onChange={this.handleChange} />;
+                fields.biography = <textarea name="biography" value={ editEmployee.biography } placeholder="Type your biography" onChange={this.handleChange}></textarea>;
+                fields.jobTitle = <input type="text" name="jobTitle" value={ editEmployee.jobTitle } placeholder="Type your job title" onChange={this.handleChange} />;
+                fields.experience = <input type="text" name="experience" value={ editEmployee.experience } placeholder="Type your experience" onChange={this.handleChange} />;
+                fields.expertise = <input type="text" maxLength="50" name="expertise" value={ editEmployee.expertise } placeholder="Type your expertise (use ',' for more)" onChange={this.handleChange} />;
                 fields.avatar = <input type="text" name="avatar" defaultValue={ typingEmployee.avatar } placeholder="Type your avatar URL" onChange={this.handleChange} />;
                 fields.department = <select name="department" defaultValue={ currentDepartment.id } onChange={this.handleChangeDepartment}>{ departments }</select>;
                 fields.location = <div className="input--static">{ currentLocation.name }</div>;
@@ -303,13 +329,18 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fas fa-user"></i></div>
                                         <div className="field">
                                             <label htmlFor="name">Full Name</label>
-                                            { fields.name }
+                                            
+                                            <div className="field--input">
+                                                { fields.name }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "name")}>X</span> }
+                                            </div>
+                                            
                                             { isEditing && <span className="field--guidance">{ employee.firstName + " " + employee.lastName }</span> }
                                         </div>
                                     </div>
 
                                     <div>
-                                        <div className="icon"><img src={typingEmployee.avatar ? typingEmployee.avatar : employee.avatar} /></div>
+                                        <div className="icon"><img src={typingEmployee.avatar ? typingEmployee.avatar : employee.avatar} alt="avatar" /></div>
                                         <div className="field">
                                             <label htmlFor="name">Avatar</label>
                                             { fields.avatar }
@@ -324,7 +355,10 @@ class Employee extends React.Component {
                                         </div>
                                         <div className="biography__field">
                                             <div></div>
-                                            { fields.biography }
+                                            <div className="field--input">
+                                                { fields.biography }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "biography")}>X</span> }
+                                            </div>
                                         </div>
                     
                                     </div>
@@ -346,7 +380,11 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fas fa-briefcase"></i></div>
                                         <div className="field">
                                             <label htmlFor="jobTitle">Job Title</label>
-                                            { fields.jobTitle }
+                                            <div className="field--input">
+                                                { fields.jobTitle }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "jobTitle")}>X</span> }
+                                            </div>
+                                            
                                             { isEditing && <span className="field--guidance">{ employee.jobTitle }</span> }
                                         </div>
                                         
@@ -356,7 +394,11 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fas fa-user-cog"></i></div>
                                         <div className="field">
                                             <label htmlFor="experience">Experience</label>
-                                            { fields.experience }
+                                            <div className="field--input">
+                                                { fields.experience }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "experience")}>X</span> }
+                                            </div>
+                                           
                                             { isEditing && <span className="field--guidance">{ employee.experience }</span> }
                                         </div>
                                        
@@ -366,7 +408,11 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fab fa-buromobelexperte"></i></div>
                                         <div className="field">
                                             <label htmlFor="expertise">Expertise</label>
-                                            { fields.expertise }
+                                            <div className="field--input">
+                                                { fields.expertise }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "expertise")}>X</span> }
+                                            </div>
+                                            
                                             { isEditing && <span className="field--guidance">{ employee.expertise }</span> }
                                         </div>
                                         
@@ -395,7 +441,11 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fas fa-envelope"></i></div>
                                         <div className="field">
                                             <label htmlFor="email">Email</label>
-                                            { fields.email }
+                                            <div className="field--input">
+                                                { fields.email }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "email")}>X</span> }
+                                            </div>
+                                            
                                             { isEditing && <span className="field--guidance">{ employee.email }</span> }
                                         </div>
                                        
@@ -405,7 +455,11 @@ class Employee extends React.Component {
                                         <div className="icon"><i className="fas fa-phone-volume"></i></div>
                                         <div className="field">
                                             <label htmlFor="phone">Phone</label>
-                                            { fields.phone }
+                                            <div className="field--input">
+                                                { fields.phone }
+                                                { isEditing && <span className="field--x" onClick={this.handleInputClear.bind(this, "phone")}>X</span> }
+                                            </div>
+                                            
                                             { isEditing && <span className="field--guidance">{ employee.phone }</span> }
                                         </div>
                                         

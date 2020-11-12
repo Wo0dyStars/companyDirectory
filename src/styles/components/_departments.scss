@@ -114,6 +114,14 @@
 					border-radius: 0;
 				}
 
+				&__x {
+					color: rgba(0, 0, 0, .2);
+					cursor: pointer;
+					position: absolute;
+					top: .6rem;
+					left: .2rem;
+				}
+
 				&__name {
 					@include flexCenter;
 					font-size: 1rem;

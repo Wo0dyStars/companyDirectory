@@ -477,6 +477,7 @@
 	border-radius: .7rem;
 	position: fixed;
 	cursor: pointer;
+	border-radius: 1rem;
 
 	background: linear-gradient(to right, #d66d75, #e29587);
 	color: white;
@@ -485,7 +486,7 @@
 	flex-direction: column;
 	text-align: center;
 
-	transition: all 0.6s cubic-bezier(.87, -.41, .19, 1.44);
+	transition: all 1s cubic-bezier(.87, -.41, .19, 1.44);
 
 	opacity: 0;
 	visibility: hidden;
@@ -525,16 +526,19 @@
 	#menu-background-1 {
 		background: url("../../images/globe.jpg") center center;
 		background-blend-mode: screen;
+		border-radius: 1rem;
 	}
 
 	#menu-background-2 {
 		background: url("../../images/department.jpg") center center;
 		background-blend-mode: screen;
+		border-radius: 1rem;
 	}
 
 	#menu-background-3 {
 		background: url("../../images/members.jpg") center center;
 		background-blend-mode: screen;
+		border-radius: 1rem;
 	}
 }
 
